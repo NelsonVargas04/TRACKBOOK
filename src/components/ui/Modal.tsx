@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 interface ModalProps {
   onClose: () => void
-  children: ReactNode
+  children: ReactNode | ((animatedClose: () => void) => ReactNode)
 }
 
 export function Modal({ onClose, children }: ModalProps) {

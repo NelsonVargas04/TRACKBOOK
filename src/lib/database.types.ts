@@ -28,6 +28,7 @@ export interface Database {
         }
         Insert: Omit<Database['public']['Tables']['applications']['Row'], 'id' | 'created_at' | 'user_id'>
         Update: Partial<Database['public']['Tables']['applications']['Insert']>
+        Relationships: []
       }
       activity_entries: {
         Row: {
@@ -41,6 +42,7 @@ export interface Database {
         }
         Insert: Omit<Database['public']['Tables']['activity_entries']['Row'], 'id' | 'created_at' | 'user_id'>
         Update: Partial<Database['public']['Tables']['activity_entries']['Insert']>
+        Relationships: []
       }
       cvs: {
         Row: {
@@ -55,6 +57,7 @@ export interface Database {
         }
         Insert: Omit<Database['public']['Tables']['cvs']['Row'], 'id' | 'created_at' | 'user_id'>
         Update: Partial<Database['public']['Tables']['cvs']['Insert']>
+        Relationships: []
       }
       cover_letters: {
         Row: {
@@ -69,7 +72,12 @@ export interface Database {
         }
         Insert: Omit<Database['public']['Tables']['cover_letters']['Row'], 'id' | 'created_at' | 'user_id'>
         Update: Partial<Database['public']['Tables']['cover_letters']['Insert']>
+        Relationships: []
       }
     }
+    Views: Record<string, never>
+    Functions: Record<string, never>
+    Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }

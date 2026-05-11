@@ -63,7 +63,6 @@ export function NewApplicationModal({ onClose, onAdd, loading = false }: Props) 
   }
 
   const sourceError = submitted && !source
-  const isValid = role.trim() && company.trim() && source
 
   return (
     <Modal onClose={onClose}>

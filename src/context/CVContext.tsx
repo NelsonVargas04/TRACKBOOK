@@ -55,7 +55,7 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
       const rows = await getCVs()
       const mapped = rows.map(rowToCV)
       setCVs(mapped)
-      const primary = rows.find((r: any) => r.is_primary)
+      const primary = rows.find((r: any) => r.is_primary) as { id: number } | undefined
       if (primary) setPrimaryIdState(primary.id)
     } finally {
       setLoading(false)
