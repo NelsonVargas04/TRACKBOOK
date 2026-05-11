@@ -1,19 +1,19 @@
 # Trackbook
 
-**Tu bitácora para la búsqueda laboral.** Trackbook es una app web para llevar el seguimiento de todas las ofertas de trabajo a las que te postulás: dónde aplicaste, en qué etapa está cada proceso, cuáles te respondieron, cuáles te "ghostearon", y qué tan bien te está yendo en general.
+**Your job hunt logbook.** Trackbook is a web app to keep track of every job offer you apply to: where you applied, what stage each process is in, who replied, who ghosted you, and how well your overall search is going.
 
-Buscar trabajo implica decenas de aplicaciones en paralelo, distintos CVs, distintas cover letters, mails que se pierden y entrevistas que se cruzan. Trackbook centraliza todo eso en un solo lugar y te da números reales sobre tu proceso: tasa de respuesta, embudo de conversión por etapa, y porcentaje de ghosting.
+Job hunting means dozens of applications running in parallel, different CVs, different cover letters, emails getting lost, and interviews overlapping. Trackbook centralizes all of that in one place and gives you real numbers on your process: response rate, conversion funnel by stage, and ghosting analytics.
 
-![Dashboard de Trackbook](./public/dashboard.png)
+![Trackbook dashboard](./public/dashboard.png)
 
-## Qué podés hacer
+## What you can do
 
-- **Registrar postulaciones** con empresa, puesto, modalidad, salario, fuente, valoración y notas
-- **Visualizar en board o lista** — vista Kanban por estado (Aplicada, Screening, Entrevista, Oferta, Rechazada) o lista filtrable
-- **Dashboard analítico** con métricas clave: total de aplicaciones, tasa de respuesta, embudo de conversión, análisis de ghosting y actividad reciente
-- **Gestionar CVs y cover letters** en un solo lugar, listos para reutilizar
-- **Exportar reportes** en CSV o PDF para tener tu historial fuera de la app
-- **Multi-idioma** (Español / Inglés) y temas claros/oscuros
+- **Log applications** with company, role, work mode, salary, source, rating and notes
+- **Board or list view** — Kanban view by status (Applied, Screening, Interview, Offer, Rejected) or filterable list
+- **Analytics dashboard** with key metrics: total applications, response rate, conversion funnel, ghosting analytics and recent activity
+- **Manage CVs and cover letters** in one place, ready to reuse
+- **Export reports** as CSV or PDF to keep your history outside the app
+- **Multi-language** (English / Spanish) and light/dark themes
 
 ## Stack
 
@@ -21,9 +21,9 @@ Buscar trabajo implica decenas de aplicaciones en paralelo, distintos CVs, disti
 - Vite 8
 - Tailwind CSS 4
 - React Router 7
-- Supabase (auth con magic link + base de datos PostgreSQL)
-- Recharts (gráficos)
-- Lucide (íconos)
+- Supabase (magic link auth + PostgreSQL database)
+- Recharts (charts)
+- Lucide (icons)
 
 ## Setup
 
@@ -31,24 +31,24 @@ Buscar trabajo implica decenas de aplicaciones en paralelo, distintos CVs, disti
 npm install
 ```
 
-Crear un archivo `.env.local` en la raíz con las credenciales de Supabase:
+Create a `.env.local` file in the root with your Supabase credentials:
 
 ```
-VITE_SUPABASE_URL=tu-url
-VITE_SUPABASE_ANON_KEY=tu-anon-key
+VITE_SUPABASE_URL=your-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
 ## Scripts
 
 ```bash
-npm run dev      # servidor de desarrollo
-npm run build    # build de producción
-npm run preview  # previsualizar build
+npm run dev      # development server
+npm run build    # production build
+npm run preview  # preview the build
 npm run lint     # eslint
 ```
 
-## Base de datos
+## Database
 
-El schema completo de Supabase está en [`supabase_schema.sql`](./supabase_schema.sql). Pegalo en `Supabase > SQL Editor > New Query` para crear las tablas.
+The full Supabase schema is in [`supabase_schema.sql`](./supabase_schema.sql). Paste it into `Supabase > SQL Editor > New Query` to create the tables.
 
-El template de email para el magic link está en [`supabase-email-template-magic-link.html`](./supabase-email-template-magic-link.html).
+The magic link email template is in [`supabase-email-template-magic-link.html`](./supabase-email-template-magic-link.html).
