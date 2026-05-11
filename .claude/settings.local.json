@@ -6,7 +6,8 @@
       "Bash(xargs -0 sed -i -E \"s|from '\\(\\\\.\\\\./\\)+\\(adapters|components|constants|context|data|helpers|hooks|lib|models|pages|services|styles|types|App|index|main\\)\\(/[^']*\\)?'|from '@/\\\\2\\\\3'|g\")",
       "Bash(xargs -0 sed -i -E \"s~from '\\(\\\\.\\\\./\\)+\\(adapters|components|constants|context|data|helpers|hooks|lib|models|pages|services|styles|types|App|index|main\\)\\(/[^']*\\)?'~from '@/\\\\2\\\\3'~g\")",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(npm run *)"
     ]
   }
 }

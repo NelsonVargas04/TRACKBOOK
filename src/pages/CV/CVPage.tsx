@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FileText, Plus, Calendar, Trash2, Star, Pencil, ScrollText } from 'lucide-react'
+import { FileText, Plus, Trash2, Star, Pencil, ScrollText } from 'lucide-react'
 import Sidebar from '@/pages/Dashboard/components/Sidebar'
 import Header from '@/pages/Dashboard/components/Header'
 import { Pagination } from '@/components/ui/Pagination'
@@ -42,7 +42,6 @@ export default function CVPage() {
   const { cvs, loading: cvsLoading, setCVs, primaryId, setPrimaryId, reload: reloadCVs } = useCV()
   const [showUpload, setShowUpload] = useState(false)
   const [uploading, setUploading] = useState(false)
-  const nextCVId = useRef(100)
 
   const sortedCVs = [...cvs].sort((a, b) => {
     if (a.id === primaryId) return -1
@@ -108,7 +107,6 @@ export default function CVPage() {
   const [showCLModal, setShowCLModal] = useState(false)
   const [editingCL, setEditingCL] = useState<CoverLetter | undefined>()
   const [savingCL, setSavingCL] = useState(false)
-  const nextCLId = useRef(100)
 
   const sortedCLs = [...coverLetters].sort((a, b) => {
     if (a.id === primaryCLId) return -1

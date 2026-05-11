@@ -4,23 +4,25 @@ import type { Database, Status } from '@/lib/database.types'
 type AppRow    = Database['public']['Tables']['applications']['Row']
 type AppInsert = Database['public']['Tables']['applications']['Insert']
 
-export async function getApplications() {
+type AppWithActivity = AppRow & { activity_entries: Database['public']['Tables']['activity_entries']['Row'][] }
+
+export async function getApplications(): Promise<AppWithActivity[]> {
   const { data, error } = await supabase
     .from('applications')
     .select('*, activity_entries(*)')
     .order('created_at', { ascending: false })
   if (error) throw error
-  return data
+  return (data ?? []) as unknown as AppWithActivity[]
 }
 
-export async function getApplicationById(id: number) {
+export async function getApplicationById(id: number): Promise<AppWithActivity> {
   const { data, error } = await supabase
     .from('applications')
     .select('*, activity_entries(*)')
     .eq('id', id)
     .single()
   if (error) throw error
-  return data
+  return data as unknown as AppWithActivity
 }
 
 export async function createApplication(app: AppInsert) {

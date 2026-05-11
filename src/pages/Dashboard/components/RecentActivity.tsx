@@ -36,12 +36,13 @@ export default function RecentActivity() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase
-      .from('activity_entries')
-      .select('id, label, note, date, applications(company, role)')
-      .order('date', { ascending: false })
-      .limit(6)
-      .then(({ data, error }) => {
+    async function load() {
+      try {
+        const { data, error } = await supabase
+          .from('activity_entries')
+          .select('id, label, note, date, applications(company, role)')
+          .order('date', { ascending: false })
+          .limit(6)
         if (error || !data) return
         setItems(
           data.map((e: any) => ({
@@ -53,8 +54,11 @@ export default function RecentActivity() {
             role: e.applications?.role ?? '',
           }))
         )
-      })
-      .finally(() => setLoading(false))
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
   }, [])
 
   return (

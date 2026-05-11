@@ -3,7 +3,6 @@ import { User, Palette, Database, Check, ChevronDown, Shield, AlertTriangle, Loc
 import { exportCSV, exportPDF } from '@/services/export.service'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { SuccessToast } from '@/components/ui/SuccessToast'
-import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { useAuth } from '@/context/AuthContext'
 import Sidebar from '@/pages/Dashboard/components/Sidebar'
 import Header from '@/pages/Dashboard/components/Header'
@@ -289,7 +288,6 @@ export default function SettingsPage() {
 
   // Change password
   const [showPasswordSection, setShowPasswordSection] = useState(false)
-  const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordSaving, setPasswordSaving] = useState(false)
@@ -374,7 +372,6 @@ export default function SettingsPage() {
       const { error } = await supabase.auth.updateUser({ password: newPassword })
       if (error) throw error
       setPasswordSuccess(true)
-      setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
       setShowPasswordSection(false)
