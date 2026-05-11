@@ -1,0 +1,57 @@
+import { supabase } from '@/lib/supabase'
+import type { Database, Status } from '@/lib/database.types'
+
+type AppRow    = Database['public']['Tables']['applications']['Row']
+type AppInsert = Database['public']['Tables']['applications']['Insert']
+
+export async function getApplications() {
+  const { data, error } = await supabase
+    .from('applications')
+    .select('*, activity_entries(*)')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+export async function getApplicationById(id: number) {
+  const { data, error } = await supabase
+    .from('applications')
+    .select('*, activity_entries(*)')
+    .eq('id', id)
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function createApplication(app: AppInsert) {
+  const { data, error } = await supabase
+    .from('applications')
+    .insert(app)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function updateApplication(id: number, updates: Partial<AppRow>) {
+  const { data, error } = await supabase
+    .from('applications')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function updateApplicationStatus(id: number, status: Status) {
+  return updateApplication(id, { status })
+}
+
+export async function deleteApplication(id: number) {
+  const { error } = await supabase
+    .from('applications')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
+}
