@@ -1,6 +1,19 @@
 # Trackbook
 
-Una app personal para registrar, organizar y analizar postulaciones laborales. Tablero con vistas en board y lista, dashboard analítico (embudo de conversión, ghosting, actividad reciente), gestor de CVs y cover letters.
+**Tu bitácora para la búsqueda laboral.** Trackbook es una app web para llevar el seguimiento de todas las ofertas de trabajo a las que te postulás: dónde aplicaste, en qué etapa está cada proceso, cuáles te respondieron, cuáles te "ghostearon", y qué tan bien te está yendo en general.
+
+Buscar trabajo implica decenas de aplicaciones en paralelo, distintos CVs, distintas cover letters, mails que se pierden y entrevistas que se cruzan. Trackbook centraliza todo eso en un solo lugar y te da números reales sobre tu proceso: tasa de respuesta, embudo de conversión por etapa, y porcentaje de ghosting.
+
+![Dashboard de Trackbook](./public/dashboard.png)
+
+## Qué podés hacer
+
+- **Registrar postulaciones** con empresa, puesto, modalidad, salario, fuente, valoración y notas
+- **Visualizar en board o lista** — vista Kanban por estado (Aplicada, Screening, Entrevista, Oferta, Rechazada) o lista filtrable
+- **Dashboard analítico** con métricas clave: total de aplicaciones, tasa de respuesta, embudo de conversión, análisis de ghosting y actividad reciente
+- **Gestionar CVs y cover letters** en un solo lugar, listos para reutilizar
+- **Exportar reportes** en CSV o PDF para tener tu historial fuera de la app
+- **Multi-idioma** (Español / Inglés) y temas claros/oscuros
 
 ## Stack
 
@@ -8,7 +21,7 @@ Una app personal para registrar, organizar y analizar postulaciones laborales. T
 - Vite 8
 - Tailwind CSS 4
 - React Router 7
-- Supabase (auth + base de datos)
+- Supabase (auth con magic link + base de datos PostgreSQL)
 - Recharts (gráficos)
 - Lucide (íconos)
 
@@ -36,6 +49,6 @@ npm run lint     # eslint
 
 ## Base de datos
 
-El schema de Supabase está en `supabase_schema.sql`. Pegarlo en `Supabase > SQL Editor > New Query` para crear las tablas.
+El schema completo de Supabase está en [`supabase_schema.sql`](./supabase_schema.sql). Pegalo en `Supabase > SQL Editor > New Query` para crear las tablas.
 
-El template de email para magic link está en `supabase-email-template-magic-link.html`.
+El template de email para el magic link está en [`supabase-email-template-magic-link.html`](./supabase-email-template-magic-link.html).
