@@ -14,9 +14,12 @@ export async function getCoverLetters() {
 }
 
 export async function createCoverLetter(cl: CLInsert) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { data, error } = await supabase
     .from('cover_letters')
-    .insert(cl)
+    .insert({ ...cl, user_id: user.id })
     .select()
     .single()
   if (error) throw error
@@ -35,7 +38,10 @@ export async function updateCoverLetter(id: number, updates: CLUpdate) {
 }
 
 export async function setPrimaryCoverLetter(id: number) {
-  await supabase.from('cover_letters').update({ is_primary: false }).neq('id', 0)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
+  await supabase.from('cover_letters').update({ is_primary: false }).eq('user_id', user.id)
   const { data, error } = await supabase
     .from('cover_letters')
     .update({ is_primary: true })

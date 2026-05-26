@@ -28,7 +28,7 @@ export async function createCV(cv: CVInsert, file: File) {
 
   const { data, error } = await supabase
     .from('cvs')
-    .insert({ ...cv, url: publicUrl })
+    .insert({ ...cv, user_id: user.id, url: publicUrl })
     .select()
     .single()
   if (error) throw error
@@ -36,7 +36,10 @@ export async function createCV(cv: CVInsert, file: File) {
 }
 
 export async function setPrimaryCV(id: number) {
-  await supabase.from('cvs').update({ is_primary: false }).neq('id', 0)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
+  await supabase.from('cvs').update({ is_primary: false }).eq('user_id', user.id)
   const { data, error } = await supabase
     .from('cvs')
     .update({ is_primary: true })

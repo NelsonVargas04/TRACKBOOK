@@ -26,9 +26,12 @@ export async function getApplicationById(id: number): Promise<AppWithActivity> {
 }
 
 export async function createApplication(app: AppInsert) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { data, error } = await supabase
     .from('applications')
-    .insert(app)
+    .insert({ ...app, user_id: user.id })
     .select()
     .single()
   if (error) throw error

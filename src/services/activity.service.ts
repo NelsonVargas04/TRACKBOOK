@@ -16,9 +16,12 @@ export async function getActivity(applicationId: number) {
 }
 
 export async function addActivityEntry(entry: ActivityInsert) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { data, error } = await supabase
     .from('activity_entries')
-    .insert(entry)
+    .insert({ ...entry, user_id: user.id })
     .select()
     .single()
   if (error) throw error
