@@ -128,6 +128,28 @@ const ThemeContext = createContext<ThemeContextValue>({
   setThemeById: () => {},
 })
 
+function hexDarken(hex: string, amount = 60): string {
+  const n = parseInt(hex.replace('#', ''), 16)
+  const r = Math.max(0, ((n >> 16) & 0xff) - amount)
+  const g = Math.max(0, ((n >> 8)  & 0xff) - amount)
+  const b = Math.max(0, ( n        & 0xff) - amount)
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`
+}
+
+function applyFavicon(accent: string) {
+  const dark = hexDarken(accent)
+  const svg = `<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${accent}" stop-opacity="0.9"/><stop offset="100%" stop-color="${dark}"/></linearGradient></defs><rect x="6" y="6" width="88" height="88" rx="24" fill="url(%23g)"/><rect x="24" y="30" width="52" height="11" rx="5.5" fill="%23fff"/><rect x="31" y="46" width="38" height="11" rx="5.5" fill="%23fff" fill-opacity="0.82"/><rect x="39" y="62" width="22" height="11" rx="5.5" fill="%23fff" fill-opacity="0.6"/></svg>`
+  const url = `data:image/svg+xml,${svg}`
+  let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
+  if (!link) {
+    link = document.createElement('link')
+    link.rel = 'icon'
+    link.type = 'image/svg+xml'
+    document.head.appendChild(link)
+  }
+  link.href = url
+}
+
 function applyTheme(t: Theme) {
   const root = document.documentElement
   root.style.setProperty('--color-bg',            t.bg)
@@ -143,6 +165,7 @@ function applyTheme(t: Theme) {
   root.style.setProperty('--color-text-secondary',t.textSecondary)
   root.style.setProperty('--color-text-muted',    t.textMuted)
   root.style.setProperty('--color-border',        t.border)
+  applyFavicon(t.accent)
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
