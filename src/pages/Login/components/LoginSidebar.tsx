@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { BrandLogo } from '@/components/BrandLogo'
 
 const slides = [
   {
@@ -64,12 +65,9 @@ export default function LoginSidebar() {
       }} />
 
       {/* logo arriba */}
-      <span
-        className="absolute top-8 left-12 font-bold tracking-[0.25em] text-purple-400 uppercase z-10"
-        style={{ fontFamily: 'Manrope, sans-serif', fontSize: '20px' }}
-      >
-        TRACKBOOK
-      </span>
+      <div className="absolute top-8 left-12 z-10">
+        <BrandLogo iconSize={36} fontSize={22} />
+      </div>
 
       {/* slide centrado */}
       <div

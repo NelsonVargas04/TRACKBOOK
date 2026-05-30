@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Mail, Lock, AlertCircle, Loader2, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { BrandLogo } from '@/components/BrandLogo'
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ email: '', password: '', confirm: '' })
@@ -55,7 +56,7 @@ export default function RegisterPage() {
       {/* Left side */}
       <div className="w-[45%] shrink-0 flex flex-col justify-between p-12" style={{ background: '#1e1f2e' }}>
         <div>
-          <span className="text-xs font-black tracking-[0.2em] uppercase" style={{ color: '#7C6FCD' }}>TRACKBOOK</span>
+          <BrandLogo iconSize={32} fontSize={18} />
         </div>
         <div>
           <h2 className="text-4xl font-black text-white leading-tight mb-4" style={{ fontFamily: 'Manrope, sans-serif' }}>

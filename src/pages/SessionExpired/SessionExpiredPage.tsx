@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ShieldOff, ArrowRight } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
+import { BrandLogo } from '@/components/BrandLogo'
 
 export default function SessionExpiredPage() {
   const navigate = useNavigate()
@@ -42,20 +43,9 @@ export default function SessionExpiredPage() {
           padding: '0 24px',
         }}
       >
-        <span
-          style={{
-            fontFamily: 'Manrope, sans-serif',
-            fontSize: '16px',
-            fontWeight: 900,
-            letterSpacing: '0.28em',
-            color: '#a78bfa',
-            textTransform: 'uppercase',
-            marginBottom: 48,
-            opacity: 0.7,
-          }}
-        >
-          TRACKBOOK
-        </span>
+        <div style={{ marginBottom: 48 }}>
+          <BrandLogo iconSize={36} fontSize={22} />
+        </div>
 
         <div
           className="relative flex items-center justify-center mb-8"

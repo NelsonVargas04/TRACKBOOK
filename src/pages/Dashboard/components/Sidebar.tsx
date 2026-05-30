@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { LayoutDashboard, Briefcase, FileText, Settings } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
+import { BrandLogo } from '@/components/BrandLogo'
 
 const links = [
   { icon: LayoutDashboard, labelKey: 'nav.dashboard',    to: '/dashboard' },
@@ -39,15 +40,7 @@ export default function Sidebar() {
         className="flex items-center gap-3 px-5 shrink-0"
         style={{ height: 64, borderBottom: '1px solid var(--color-border)' }}
       >
-        <div
-          className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: 'var(--color-accent)', boxShadow: '0 4px 12px var(--color-accent-border)' }}
-        >
-          <Briefcase size={15} color="#fff" strokeWidth={2.5} />
-        </div>
-        <p className="font-black tracking-widest uppercase leading-none" style={{ fontFamily: 'Manrope, sans-serif', fontSize: '14px', color: 'var(--color-accent-text)' }}>
-          TRACKBOOK
-        </p>
+        <BrandLogo iconSize={32} fontSize={18} />
       </div>
 
       {/* ── Nav label ── */}
