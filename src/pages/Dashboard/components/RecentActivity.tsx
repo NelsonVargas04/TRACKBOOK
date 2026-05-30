@@ -38,22 +38,47 @@ export default function RecentActivity() {
   useEffect(() => {
     async function load() {
       try {
-        const { data, error } = await supabase
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        // Try activity entries first
+        const { data: entries } = await supabase
           .from('activity_entries')
           .select('id, label, note, date, applications(company, role)')
+          .eq('user_id', user.id)
           .order('date', { ascending: false })
           .limit(6)
-        if (error || !data) return
-        setItems(
-          data.map((e: any) => ({
+
+        if (entries && entries.length > 0) {
+          setItems(entries.map((e: any) => ({
             id: e.id,
             label: e.label,
             note: e.note,
             date: e.date,
             company: e.applications?.company ?? '',
             role: e.applications?.role ?? '',
-          }))
-        )
+          })))
+          return
+        }
+
+        // Fallback: show recently created applications
+        const { data: apps } = await supabase
+          .from('applications')
+          .select('id, company, role, status, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(6)
+
+        if (apps) {
+          setItems(apps.map((a: any) => ({
+            id: a.id,
+            label: a.status,
+            note: null,
+            date: a.created_at.slice(0, 10),
+            company: a.company,
+            role: a.role,
+          })))
+        }
       } finally {
         setLoading(false)
       }
