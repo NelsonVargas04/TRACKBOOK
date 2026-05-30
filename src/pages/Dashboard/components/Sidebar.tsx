@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { LayoutDashboard, Briefcase, FileText, Settings } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 import { BrandLogo } from '@/components/BrandLogo'
+import pkg from '../../../../package.json'
 
 const links = [
   { icon: LayoutDashboard, labelKey: 'nav.dashboard',    to: '/dashboard' },
@@ -131,7 +132,7 @@ export default function Sidebar() {
       {/* ── Version ── */}
       <div className="px-5 pb-4 pt-3 shrink-0" style={{ borderTop: '1px solid var(--color-border)' }}>
         <p className="text-[10px] tracking-widest uppercase" style={{ color: 'var(--color-text-muted)', opacity: 0.5 }}>
-          v{__APP_VERSION__}
+          v{pkg.version}
         </p>
       </div>
     </aside>
