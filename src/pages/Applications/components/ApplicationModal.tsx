@@ -6,12 +6,12 @@ import {
 } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { SOURCE_CONFIG } from '@/components/ui/SourceIcons'
+import { KNOWN_SOURCES, getSourceCfg, SourceLogo } from '@/components/ui/SourceIcons'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useLang } from '@/context/LanguageContext'
 import { statusConfig } from '@/data/mockApplications'
 import { addActivityEntry, updateActivityEntry, deleteActivityEntry } from '@/services/activity.service'
-import type { Application, Status, ActivityEntry, Source } from '@/data/mockApplications'
+import type { Application, Status, ActivityEntry } from '@/data/mockApplications'
 
 const statusOptions: Status[] = ['Aplicada', 'Screening', 'Entrevista', 'Oferta', 'Rechazada']
 const typeValuesES = ['Remoto', 'Híbrido', 'Presencial']
@@ -54,6 +54,33 @@ interface Props {
   app: Application
   onClose: () => void
   onUpdate: (updated: Application) => void
+}
+
+function SourcePickerInline({ value, onChange }: { value: string | null; onChange: (v: string | null) => void }) {
+  return (
+    <div className="flex gap-2 flex-wrap">
+      {KNOWN_SOURCES.map((s) => {
+        const { color } = getSourceCfg(s)
+        const isSelected = value === s
+        return (
+          <button
+            key={s}
+            onClick={() => onChange(isSelected ? null : s)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold transition-all"
+            style={{
+              fontSize: '13px',
+              background: isSelected ? color : 'var(--color-bg)',
+              border: `1.5px solid ${isSelected ? color : 'var(--color-border)'}`,
+              color: isSelected ? '#fff' : color,
+            }}
+          >
+            <SourceLogo source={s} size={13} />
+            {s}
+          </button>
+        )
+      })}
+    </div>
+  )
 }
 
 export function ApplicationModal({ app, onClose, onUpdate }: Props) {
@@ -335,18 +362,10 @@ export function ApplicationModal({ app, onClose, onUpdate }: Props) {
                 <label className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--color-text-muted)' }}>
                   {t('modal.offerSource')}
                 </label>
-                <div className="flex gap-2 flex-wrap">
-                  {(Object.entries(SOURCE_CONFIG) as [Source, typeof SOURCE_CONFIG[Source]][]).map(([value, cfg]) => {
-                    const Icon = cfg.icon
-                    const isSelected = data.source === value
-                    return (
-                      <button key={value} onClick={() => patch({ source: isSelected ? undefined : value })} className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all" style={{ fontSize: '14px', background: isSelected ? cfg.color : 'var(--color-bg)', border: `1.5px solid ${isSelected ? cfg.color : 'var(--color-border)'}`, color: isSelected ? '#fff' : cfg.color }}>
-                        <Icon size={14} />
-                        {cfg.label}
-                      </button>
-                    )
-                  })}
-                </div>
+                <SourcePickerInline
+                  value={data.source ?? null}
+                  onChange={(s) => patch({ source: s ?? undefined })}
+                />
               </div>
 
               <div className="flex flex-col gap-2">

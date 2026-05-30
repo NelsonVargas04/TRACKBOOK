@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
-// Clearbit logo URL for a given domain
-function clearbit(domain: string) {
-  return `https://logo.clearbit.com/${domain}`
+// Google Favicon service — reliable, no auth needed
+function faviconUrl(domain: string) {
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
 }
 
 // Map from source name → clearbit domain
@@ -120,7 +120,7 @@ export function SourceLogo({ source, size = 16 }: { source: string; size?: numbe
   if (domain && !failed) {
     return (
       <img
-        src={clearbit(domain)}
+        src={faviconUrl(domain)}
         alt={source}
         width={size}
         height={size}
