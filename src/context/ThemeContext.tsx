@@ -138,8 +138,21 @@ function hexDarken(hex: string, amount = 60): string {
 
 function applyFavicon(accent: string) {
   const dark = hexDarken(accent)
-  const svg = `<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${accent}" stop-opacity="0.9"/><stop offset="100%" stop-color="${dark}"/></linearGradient></defs><rect x="6" y="6" width="88" height="88" rx="24" fill="url(%23g)"/><rect x="24" y="30" width="52" height="11" rx="5.5" fill="%23fff"/><rect x="31" y="46" width="38" height="11" rx="5.5" fill="%23fff" fill-opacity="0.82"/><rect x="39" y="62" width="22" height="11" rx="5.5" fill="%23fff" fill-opacity="0.6"/></svg>`
-  const url = `data:image/svg+xml,${svg}`
+  const svg = [
+    `<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">`,
+    `<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">`,
+    `<stop offset="0%" stop-color="${accent}" stop-opacity="0.9"/>`,
+    `<stop offset="100%" stop-color="${dark}"/>`,
+    `</linearGradient></defs>`,
+    `<rect x="6" y="6" width="88" height="88" rx="24" fill="url(#g)"/>`,
+    `<rect x="24" y="30" width="52" height="11" rx="5.5" fill="#fff"/>`,
+    `<rect x="31" y="46" width="38" height="11" rx="5.5" fill="#fff" fill-opacity="0.82"/>`,
+    `<rect x="39" y="62" width="22" height="11" rx="5.5" fill="#fff" fill-opacity="0.6"/>`,
+    `</svg>`,
+  ].join('')
+
+  const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+
   let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
   if (!link) {
     link = document.createElement('link')
@@ -147,6 +160,8 @@ function applyFavicon(accent: string) {
     link.type = 'image/svg+xml'
     document.head.appendChild(link)
   }
+  // Force browser to reload by removing and re-adding
+  link.href = ''
   link.href = url
 }
 
