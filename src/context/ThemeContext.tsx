@@ -4,6 +4,7 @@ export interface Theme {
   id: string
   label: string
   description: string
+  descriptionKey: string
   preview: [string, string, string]
   bg: string
   surface: string
@@ -24,6 +25,7 @@ export const themes: Theme[] = [
     id: 'default',
     label: 'Default',
     description: 'Dark purple — the classic TRACKBOOK look.',
+    descriptionKey: 'theme.default.desc',
     preview: ['#16171f', '#1a1b2e', '#8B5CF6'],
     bg: '#16171f',
     surface: '#1a1b2e',
@@ -42,6 +44,7 @@ export const themes: Theme[] = [
     id: 'midnight',
     label: 'Midnight Blue',
     description: 'Deep navy with electric blue accents.',
+    descriptionKey: 'theme.midnight.desc',
     preview: ['#0d1117', '#161b22', '#2563EB'],
     bg: '#0d1117',
     surface: '#161b22',
@@ -60,6 +63,7 @@ export const themes: Theme[] = [
     id: 'emerald',
     label: 'Emerald',
     description: 'Dark slate with green accents.',
+    descriptionKey: 'theme.emerald.desc',
     preview: ['#0f1613', '#141f1a', '#059669'],
     bg: '#0f1613',
     surface: '#141f1a',
@@ -78,6 +82,7 @@ export const themes: Theme[] = [
     id: 'rose',
     label: 'Rose',
     description: 'Dark with vibrant rose-pink accents.',
+    descriptionKey: 'theme.rose.desc',
     preview: ['#13100f', '#1e1614', '#e11d48'],
     bg: '#13100f',
     surface: '#1e1614',
@@ -96,6 +101,7 @@ export const themes: Theme[] = [
     id: 'light',
     label: 'Light',
     description: 'Clean white with purple accents.',
+    descriptionKey: 'theme.light.desc',
     preview: ['#f3f4f6', '#ffffff', '#7C3AED'],
     bg: '#f0f0f7',
     surface: '#ffffff',

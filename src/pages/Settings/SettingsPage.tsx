@@ -704,24 +704,24 @@ export default function SettingsPage() {
                 {t('settings.appearanceDesc')}
               </p>
               <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
-                {themes.map((t) => {
-                  const isActive = theme.id === t.id
+                {themes.map((th) => {
+                  const isActive = theme.id === th.id
                   return (
                     <button
-                      key={t.id}
-                      onClick={() => setThemeById(t.id)}
+                      key={th.id}
+                      onClick={() => setThemeById(th.id)}
                       className="flex flex-col items-start gap-3 p-4 rounded-2xl text-left w-full"
                       style={{
-                        background: isActive ? t.accentLight : 'var(--color-bg)',
-                        border: isActive ? `2px solid ${t.accent}` : '2px solid var(--color-border)',
+                        background: isActive ? th.accentLight : 'var(--color-bg)',
+                        border: isActive ? `2px solid ${th.accent}` : '2px solid var(--color-border)',
                         transform: isActive ? 'scale(1.03)' : 'scale(1)',
                         transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                        boxShadow: isActive ? `0 0 20px ${t.accent}35` : 'none',
+                        boxShadow: isActive ? `0 0 20px ${th.accent}35` : 'none',
                       }}
                     >
                       {/* Color preview dots */}
                       <div className="flex items-center -space-x-1.5">
-                        {t.preview.map((color, i) => (
+                        {th.preview.map((color, i) => (
                           <div
                             key={i}
                             className="rounded-full border-2"
@@ -730,7 +730,7 @@ export default function SettingsPage() {
                               height: i === 0 ? 24 : 20,
                               background: color,
                               borderColor: 'var(--color-surface)',
-                              zIndex: t.preview.length - i,
+                              zIndex: th.preview.length - i,
                             }}
                           />
                         ))}
@@ -739,20 +739,20 @@ export default function SettingsPage() {
                       {/* Label + check */}
                       <div className="w-full">
                         <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="text-sm font-bold leading-none" style={{ color: isActive ? t.accentText : 'var(--color-text-primary)' }}>
-                            {t.label}
+                          <span className="text-sm font-bold leading-none" style={{ color: isActive ? th.accentText : 'var(--color-text-primary)' }}>
+                            {th.label}
                           </span>
                           {isActive && (
                             <span
                               className="flex items-center justify-center rounded-full shrink-0"
-                              style={{ width: 16, height: 16, background: t.accent }}
+                              style={{ width: 16, height: 16, background: th.accent }}
                             >
                               <Check size={9} color="#fff" strokeWidth={3} />
                             </span>
                           )}
                         </div>
                         <p className="text-xs leading-snug" style={{ color: 'var(--color-text-muted)' }}>
-                          {t.description}
+                          {t(th.descriptionKey)}
                         </p>
                       </div>
                     </button>
