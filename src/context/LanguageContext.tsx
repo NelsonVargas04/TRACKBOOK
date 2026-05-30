@@ -53,6 +53,17 @@ const translations: Record<Language, Record<string, string>> = {
     'funnel.last30':    'Últimos 30 días',
     'funnel.conv':      'conv.',
 
+    // Timeline
+    'timeline.title':   'Postulaciones en el Tiempo',
+    'timeline.subtitle':'Aplicaciones enviadas por mes',
+    'timeline.peak':    'Pico',
+    'timeline.empty':   'Sin datos suficientes',
+    'timeline.apps':    'postulaciones',
+
+    // Sources
+    'sources.title':    'Origen de Postulaciones',
+    'sources.subtitle': 'Top plataformas utilizadas',
+
     // GhostingAnalytics
     'ghosting.title':   'Análisis de Respuestas',
     'ghosting.subtitle':'Tiempos de respuesta — últimos 30 días',
@@ -422,6 +433,17 @@ const translations: Record<Language, Record<string, string>> = {
     'funnel.subtitle':  'Application progression by stage',
     'funnel.last30':    'Last 30 days',
     'funnel.conv':      'conv.',
+
+    // Timeline
+    'timeline.title':   'Applications Over Time',
+    'timeline.subtitle':'Applications submitted per month',
+    'timeline.peak':    'Peak',
+    'timeline.empty':   'Not enough data',
+    'timeline.apps':    'applications',
+
+    // Sources
+    'sources.title':    'Application Sources',
+    'sources.subtitle': 'Top platforms used',
 
     // GhostingAnalytics
     'ghosting.title':    'Response Analytics',

@@ -6,6 +6,8 @@ import StatsCards from './components/StatsCards'
 import ConversionFunnel from './components/ConversionFunnel'
 import RecentActivity from './components/RecentActivity'
 import GhostingAnalytics from './components/GhostingAnalytics'
+import TimelineChart from './components/TimelineChart'
+import SourcesChart from './components/SourcesChart'
 import { useLang } from '@/context/LanguageContext'
 import { useAuth } from '@/context/AuthContext'
 import { exportCSV } from '@/services/export.service'
@@ -64,7 +66,11 @@ export default function DashboardPage() {
 
           <div className="flex flex-col gap-6">
             <StatsCards />
-            <ConversionFunnel />
+            <div className="grid gap-4" style={{ gridTemplateColumns: '1fr 320px', alignItems: 'stretch' }}>
+              <ConversionFunnel />
+              <SourcesChart />
+            </div>
+            <TimelineChart />
             <div className="grid grid-cols-2 gap-4 items-stretch">
               <RecentActivity />
               <GhostingAnalytics />

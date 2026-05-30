@@ -5,15 +5,17 @@ import { getApplications } from '@/services/applications.service'
 export default function ConversionFunnel() {
   const { t } = useLang()
   const [animated, setAnimated] = useState(false)
-  const [counts, setCounts] = useState({ applied: 0, screening: 0, interview: 0, offer: 0 })
+  const [counts, setCounts] = useState({ applied: 0, inProcess: 0, screening: 0, interview: 0, offer: 0, ghosted: 0 })
 
   useEffect(() => {
     getApplications().then((rows) => {
       setCounts({
         applied:   rows.length,
+        inProcess: rows.filter((r) => r.status === 'En Proceso').length,
         screening: rows.filter((r) => ['Screening', 'Entrevista', 'Oferta'].includes(r.status)).length,
         interview: rows.filter((r) => ['Entrevista', 'Oferta'].includes(r.status)).length,
         offer:     rows.filter((r) => r.status === 'Oferta').length,
+        ghosted:   rows.filter((r) => r.status === 'Ghosteado').length,
       })
     }).catch(console.error)
     const t = setTimeout(() => setAnimated(true), 100)
@@ -22,16 +24,18 @@ export default function ConversionFunnel() {
 
   const stages = [
     { labelKey: 'status.applied',   value: counts.applied,   color: '#818cf8', bg: 'rgba(129,140,248,0.12)' },
+    { labelKey: 'status.inProcess', value: counts.inProcess, color: '#06b6d4', bg: 'rgba(6,182,212,0.12)'   },
     { labelKey: 'status.screening', value: counts.screening, color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
     { labelKey: 'status.interview', value: counts.interview, color: '#f59e0b', bg: 'rgba(245,158,11,0.12)'  },
     { labelKey: 'status.offer',     value: counts.offer,     color: '#22c55e', bg: 'rgba(34,197,94,0.12)'   },
+    { labelKey: 'status.ghosted',   value: counts.ghosted,   color: '#64748b', bg: 'rgba(100,116,139,0.12)' },
   ]
 
   const max = stages[0].value || 1
 
   return (
     <div
-      className="rounded-xl p-6"
+      className="rounded-xl p-6 flex flex-col h-full"
       style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
       <div className="flex items-start justify-between mb-6">
@@ -94,7 +98,7 @@ export default function ConversionFunnel() {
         })}
       </div>
 
-      <div className="grid grid-cols-4 gap-3 mt-6 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
+      <div className="grid grid-cols-6 gap-3 mt-6 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
         {stages.map(({ labelKey, value, color }) => (
           <div key={labelKey} className="flex flex-col gap-0.5">
             <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t(labelKey)}</span>
