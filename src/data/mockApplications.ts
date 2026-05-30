@@ -1,5 +1,5 @@
-export type Status = 'Aplicada' | 'Screening' | 'Entrevista' | 'Oferta' | 'Rechazada'
-export type Source = 'LinkedIn' | 'Indeed' | 'GetOnBoard' | 'Glassdoor' | 'Referido' | 'Empresa' | 'Otro'
+export type Status = 'Aplicada' | 'Screening' | 'Entrevista' | 'Oferta' | 'Rechazada' | 'Ghosteado' | 'En Proceso'
+export type Source = string
 
 export type ActivityKind = 'event' | 'note'
 
@@ -38,6 +38,8 @@ export const statusConfig: Record<Status, { color: string; bg: string; dot: stri
   Entrevista: { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  dot: '#f59e0b' },
   Oferta:     { color: '#22c55e', bg: 'rgba(34,197,94,0.12)',   dot: '#22c55e' },
   Rechazada:  { color: '#ef4444', bg: 'rgba(239,68,68,0.12)',   dot: '#ef4444' },
+  Ghosteado:  { color: '#64748b', bg: 'rgba(100,116,139,0.12)', dot: '#64748b' },
+  'En Proceso': { color: '#06b6d4', bg: 'rgba(6,182,212,0.12)', dot: '#06b6d4' },
 }
 
 export const mockApplications: Application[] = [

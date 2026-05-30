@@ -4,11 +4,13 @@ import { useLang } from '@/context/LanguageContext'
 import type { Application, Status } from '@/data/mockApplications'
 
 const STATUS_KEYS: { status: Status; dot: string; labelKey: string }[] = [
-  { status: 'Aplicada',   dot: '#94a3b8', labelKey: 'status.applied'   },
-  { status: 'Screening',  dot: '#a78bfa', labelKey: 'status.screening' },
-  { status: 'Entrevista', dot: '#f59e0b', labelKey: 'status.interview' },
-  { status: 'Oferta',     dot: '#22c55e', labelKey: 'status.offer'     },
-  { status: 'Rechazada',  dot: '#ef4444', labelKey: 'status.rejected'  },
+  { status: 'Aplicada',   dot: '#94a3b8', labelKey: 'status.applied'    },
+  { status: 'En Proceso', dot: '#06b6d4', labelKey: 'status.inProcess'  },
+  { status: 'Screening',  dot: '#a78bfa', labelKey: 'status.screening'  },
+  { status: 'Entrevista', dot: '#f59e0b', labelKey: 'status.interview'  },
+  { status: 'Oferta',     dot: '#22c55e', labelKey: 'status.offer'      },
+  { status: 'Ghosteado',  dot: '#64748b', labelKey: 'status.ghosted'    },
+  { status: 'Rechazada',  dot: '#ef4444', labelKey: 'status.rejected'   },
 ]
 
 interface Props {

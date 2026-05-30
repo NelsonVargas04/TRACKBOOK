@@ -56,6 +56,7 @@ export function CoverLetterProvider({ children }: { children: React.ReactNode })
       setCoverLetters(rows.map(rowToCL))
       const primary = rows.find((r: any) => r.is_primary) as { id: number } | undefined
       if (primary) setPrimaryCLIdState(primary.id)
+      else if (rows.length === 1) setPrimaryCLIdState(rows[0].id)
     } finally {
       setLoading(false)
     }

@@ -1,7 +1,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[]
 
-export type Status = 'Aplicada' | 'Screening' | 'Entrevista' | 'Oferta' | 'Rechazada'
-export type Source = 'LinkedIn' | 'Indeed' | 'GetOnBoard' | 'Glassdoor' | 'Referido' | 'Empresa' | 'Otro'
+export type Status = 'Aplicada' | 'Screening' | 'Entrevista' | 'Oferta' | 'Rechazada' | 'Ghosteado' | 'En Proceso'
+export type Source = string
 
 type ApplicationsRow = {
   id: number

@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from 'react'
-import { User, Palette, Database, Check, ChevronDown, Shield, AlertTriangle, Lock, Phone, Loader2 } from 'lucide-react'
+import { User, Palette, Database, Check, ChevronDown, Shield, AlertTriangle, Lock, Phone, Loader2, FileSpreadsheet } from 'lucide-react'
 import { exportCSV, exportPDF } from '@/services/export.service'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { SuccessToast } from '@/components/ui/SuccessToast'
@@ -11,6 +11,7 @@ import { SectionTitle } from '@/components/ui/SectionTitle'
 import { InputField } from '@/components/ui/InputField'
 import { CVPrincipalCard } from './components/CVPrincipalCard'
 import { CoverLetterPrincipalCard } from './components/CoverLetterPrincipalCard'
+import { ImportModal } from './components/ImportModal'
 import { useTheme, themes } from '@/context/ThemeContext'
 import { useLang } from '@/context/LanguageContext'
 
@@ -303,6 +304,7 @@ export default function SettingsPage() {
   // Export
   const [exportingCSV, setExportingCSV] = useState(false)
   const [exportingPDF, setExportingPDF] = useState(false)
+  const [showImport, setShowImport] = useState(false)
 
   async function handleExportCSV() {
     if (exportingCSV) return
@@ -417,6 +419,9 @@ export default function SettingsPage() {
           <SuccessToast message={t('toast.passwordSaved')} onDismiss={() => setPasswordSuccess(false)} />
         </div>
       )}
+      {showImport && (
+        <ImportModal onClose={() => setShowImport(false)} onDone={() => setShowImport(false)} />
+      )}
       {showDeleteModal && (
         <DeleteAccountModal
           confirmText={deleteConfirmText}
@@ -441,7 +446,7 @@ export default function SettingsPage() {
             </p>
           </div>
 
-          <div className="grid gap-5 items-stretch" style={{ gridTemplateColumns: '1fr 480px' }}>
+          <div className="grid gap-5 items-stretch" style={{ gridTemplateColumns: '1fr 380px' }}>
             {/* Perfil de Usuario */}
             <Card>
               <SectionTitle icon={User} label={t('settings.profile')} />
@@ -516,64 +521,77 @@ export default function SettingsPage() {
               </div>
             </Card>
 
-            {/* Export Data — follows theme like other cards */}
-            <div
-              className="rounded-xl p-7 flex flex-col h-full"
-              style={{
-                background: 'var(--color-surface)',
-                backgroundImage: 'radial-gradient(circle at bottom left, var(--color-accent-border) 0%, transparent 60%)',
-                border: '1px solid var(--color-border)',
-              }}
-            >
-              {/* Header */}
-              <div className="flex items-center gap-2.5 mb-4">
-                <div
-                  className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+            {/* Right column: Export + Import stacked */}
+            <div className="flex flex-col gap-5 h-full">
+
+              {/* Export Data */}
+              <div className="rounded-2xl p-6 flex flex-col flex-1" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--color-accent)' }}>
+                    <Database size={17} color="#fff" />
+                  </div>
+                  <h2 className="font-bold" style={{ fontFamily: 'Manrope, sans-serif', color: 'var(--color-text-primary)', fontSize: 16 }}>
+                    {t('settings.exportTitle')}
+                  </h2>
+                </div>
+                <div className="flex flex-col gap-2 mb-5">
+                  {[t('settings.exportCSV'), t('settings.exportPDF')].map((label, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--color-accent)' }} />
+                      <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{label}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-2 mt-auto pt-4">
+                  <button
+                    onClick={handleExportCSV}
+                    disabled={exportingCSV}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium transition-opacity hover:opacity-80 text-sm"
+                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', opacity: exportingCSV ? 0.6 : 1 }}
+                  >
+                    {exportingCSV ? <Loader2 size={14} className="animate-spin" /> : <Database size={14} />}
+                    {exportingCSV ? t('export.loading') : t('settings.exportCSV')}
+                  </button>
+                  <button
+                    onClick={handleExportPDF}
+                    disabled={exportingPDF}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-white transition-opacity hover:opacity-90 text-sm"
+                    style={{ background: 'var(--color-accent)', opacity: exportingPDF ? 0.6 : 1 }}
+                  >
+                    {exportingPDF ? <Loader2 size={14} className="animate-spin" /> : <FileSpreadsheet size={14} />}
+                    {exportingPDF ? t('export.loading') : t('settings.exportPDF')}
+                  </button>
+                </div>
+              </div>
+
+              {/* Import Data */}
+              <div className="rounded-2xl p-6 flex flex-col flex-1" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--color-accent)' }}>
+                    <FileSpreadsheet size={17} color="#fff" />
+                  </div>
+                  <h2 className="font-bold" style={{ fontFamily: 'Manrope, sans-serif', color: 'var(--color-text-primary)', fontSize: 16 }}>
+                    {t('settings.importTitle')}
+                  </h2>
+                </div>
+                <div className="flex flex-col gap-2 mb-5">
+                  {[t('settings.importFeat1'), t('settings.importFeat2'), t('settings.importFeat3')].map(f => (
+                    <div key={f} className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--color-accent)' }} />
+                      <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setShowImport(true)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-white transition-opacity hover:opacity-90 text-sm mt-auto"
                   style={{ background: 'var(--color-accent)' }}
                 >
-                  <Database size={18} color="#ffffff" />
-                </div>
-                <h2 className="font-bold text-lg" style={{ fontFamily: 'Manrope, sans-serif', color: 'var(--color-text-primary)' }}>
-                  {t('settings.exportTitle')}
-                </h2>
-              </div>
-
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-                {t('settings.exportDesc')}
-              </p>
-
-              <div className="flex flex-col gap-3 mt-auto pt-6">
-                <button
-                  onClick={handleExportCSV}
-                  disabled={exportingCSV}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-opacity hover:opacity-80"
-                  style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', fontSize: '15px', opacity: exportingCSV ? 0.6 : 1 }}
-                >
-                  {exportingCSV
-                    ? <Loader2 size={15} className="animate-spin" />
-                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-                      </svg>
-                  }
-                  {exportingCSV ? t('export.loading') : t('settings.exportCSV')}
-                </button>
-                <button
-                  onClick={handleExportPDF}
-                  disabled={exportingPDF}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
-                  style={{ background: 'var(--color-accent)', fontSize: '15px', opacity: exportingPDF ? 0.6 : 1 }}
-                >
-                  {exportingPDF
-                    ? <Loader2 size={15} className="animate-spin" />
-                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14,2 14,8 20,8"/>
-                      </svg>
-                  }
-                  {exportingPDF ? t('export.loading') : t('settings.exportPDF')}
+                  <FileSpreadsheet size={14} />
+                  {t('settings.importBtn')}
                 </button>
               </div>
+
             </div>
 
             {/* CV + Carta — 2 columnas iguales */}

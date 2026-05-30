@@ -13,7 +13,7 @@ import { getApplications, createApplication, updateApplication } from '@/service
 import { useLang } from '@/context/LanguageContext'
 import type { Application, Status } from '@/data/mockApplications'
 
-const ALL_STATUSES: Status[] = ['Aplicada', 'Screening', 'Entrevista', 'Oferta', 'Rechazada']
+const ALL_STATUSES: Status[] = ['Aplicada', 'En Proceso', 'Screening', 'Entrevista', 'Oferta', 'Ghosteado', 'Rechazada']
 
 function dbRowToApp(row: any): Application {
   return {

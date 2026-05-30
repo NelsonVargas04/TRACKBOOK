@@ -1,38 +1,68 @@
-// Brand SVG icons for job sources
+import { useState } from 'react'
 
-export function LinkedInIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-    </svg>
-  )
+// Clearbit logo URL for a given domain
+function clearbit(domain: string) {
+  return `https://logo.clearbit.com/${domain}`
 }
 
-export function IndeedIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M11.01 0C7.265 0 4.21 1.39 4.21 5.39v1.21H2.64A2.64 2.64 0 0 0 0 9.24v10.12A2.64 2.64 0 0 0 2.64 22h1.57v.36A1.64 1.64 0 0 0 5.85 24h10.3a1.64 1.64 0 0 0 1.64-1.64V22h1.57A2.64 2.64 0 0 0 22 19.36V9.24a2.64 2.64 0 0 0-2.64-2.63h-1.57V5.39C17.79 1.39 14.745 0 11.01 0zm0 2.12c2.916 0 4.638 1.032 4.638 3.27v1.21H6.37V5.39c0-2.238 1.724-3.27 4.64-3.27zm0 7.18a4.45 4.45 0 1 1 0 8.9 4.45 4.45 0 0 1 0-8.9zm0 2.1a2.35 2.35 0 1 0 0 4.7 2.35 2.35 0 0 0 0-4.7z"/>
-    </svg>
-  )
+// Map from source name → clearbit domain
+const SOURCE_DOMAINS: Record<string, string> = {
+  'LinkedIn':       'linkedin.com',
+  'Indeed':         'indeed.com',
+  'GetOnBoard':     'getonbrd.com',
+  'Glassdoor':      'glassdoor.com',
+  'Google Careers': 'google.com',
+  'Greenhouse':     'greenhouse.io',
+  'Workday':        'workday.com',
+  'BambooHR':       'bamboohr.com',
+  'Lever':          'lever.co',
+  'HackerRank':     'hackerrank.com',
+  'CodeSignal':     'codesignal.com',
+  'Coderbyte':      'coderbyte.com',
+  'JazzHR':         'jazzhr.com',
+  'InfoJobs':       'infojobs.net',
+  'CompuTrabajo':   'computrabajo.com',
+  'Jooble':         'jooble.org',
+  'JobRapido':      'jobrapido.com',
+  'JobGether':      'jobgether.com',
+  'Remotive':       'remotive.com',
+  'Mercado Libre':  'mercadolibre.com',
+  'Globant':        'globant.com',
+  'N5 Now':         'n5now.com',
+  'Oowlish':        'oowlish.com',
+  'Avature':        'avature.net',
+  'Clerk':          'clerk.com',
 }
 
-export function GetOnBoardIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15zm0 3a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zm0 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/>
-    </svg>
-  )
+// Accent colors for sources without a domain logo
+const SOURCE_COLORS: Record<string, { color: string; bg: string }> = {
+  'LinkedIn':       { color: '#0A66C2', bg: 'rgba(10,102,194,0.12)'  },
+  'Indeed':         { color: '#2164f3', bg: 'rgba(33,100,243,0.12)'  },
+  'GetOnBoard':     { color: '#00c27c', bg: 'rgba(0,194,124,0.12)'   },
+  'Glassdoor':      { color: '#0caa41', bg: 'rgba(12,170,65,0.12)'   },
+  'Referido':       { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)'  },
+  'Empresa':        { color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)'  },
+  'Google Careers': { color: '#4285F4', bg: 'rgba(66,133,244,0.12)'  },
+  'Greenhouse':     { color: '#24a148', bg: 'rgba(36,161,72,0.12)'   },
+  'Workday':        { color: '#f77f00', bg: 'rgba(247,127,0,0.12)'   },
+  'BambooHR':       { color: '#7dc242', bg: 'rgba(125,194,66,0.12)'  },
+  'Lever':          { color: '#0085ff', bg: 'rgba(0,133,255,0.12)'   },
+  'HackerRank':     { color: '#2ec866', bg: 'rgba(46,200,102,0.12)'  },
+  'CodeSignal':     { color: '#6b4fbb', bg: 'rgba(107,79,187,0.12)'  },
+  'InfoJobs':       { color: '#ff6600', bg: 'rgba(255,102,0,0.12)'   },
+  'CompuTrabajo':   { color: '#e63946', bg: 'rgba(230,57,70,0.12)'   },
+  'Mercado Libre':  { color: '#ffe600', bg: 'rgba(255,230,0,0.15)'   },
+  'Remotive':       { color: '#6366f1', bg: 'rgba(99,102,241,0.12)'  },
 }
 
-export function GlassdoorIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M22.5 12.02C22.5 6.23 17.79 1.5 12 1.5S1.5 6.23 1.5 12.02c0 4.87 3.22 9 7.69 10.35V17.5H7.5v-2.25h1.69v-1.7c0-1.68.99-2.6 2.52-2.6.73 0 1.49.13 1.49.13v1.64h-.84c-.83 0-1.08.51-1.08 1.04v1.49h1.84l-.29 2.25h-1.55v4.87C19.28 21.02 22.5 16.89 22.5 12.02z"/>
-    </svg>
-  )
+const FALLBACK_COLOR = { color: '#64748b', bg: 'rgba(100,116,139,0.12)' }
+
+export function getSourceColor(source: string) {
+  return SOURCE_COLORS[source] ?? FALLBACK_COLOR
 }
 
-export function ReferralIcon({ size = 16 }: { size?: number }) {
+// Fallback SVG icons
+function ReferralIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -43,7 +73,7 @@ export function ReferralIcon({ size = 16 }: { size?: number }) {
   )
 }
 
-export function CompanyWebIcon({ size = 16 }: { size?: number }) {
+function CompanyWebIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10"/>
@@ -53,7 +83,16 @@ export function CompanyWebIcon({ size = 16 }: { size?: number }) {
   )
 }
 
-export function OtherSourceIcon({ size = 16 }: { size?: number }) {
+function EmailIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <path d="M2 7l10 7 10-7"/>
+    </svg>
+  )
+}
+
+function OtherSourceIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="8"/>
@@ -62,33 +101,67 @@ export function OtherSourceIcon({ size = 16 }: { size?: number }) {
   )
 }
 
-import type { Source } from '@/data/mockApplications'
-
-export const SOURCE_CONFIG: Record<Source, {
-  icon: React.ElementType
-  color: string
-  bg: string
-  label: string
-}> = {
-  LinkedIn:   { icon: LinkedInIcon,   color: '#0A66C2', bg: 'rgba(10,102,194,0.12)',  label: 'LinkedIn'    },
-  Indeed:     { icon: IndeedIcon,     color: '#2164f3', bg: 'rgba(33,100,243,0.12)',  label: 'Indeed'      },
-  GetOnBoard: { icon: GetOnBoardIcon, color: '#00c27c', bg: 'rgba(0,194,124,0.12)',   label: 'GetOnBoard'  },
-  Glassdoor:  { icon: GlassdoorIcon,  color: '#0caa41', bg: 'rgba(12,170,65,0.12)',   label: 'Glassdoor'   },
-  Referido:   { icon: ReferralIcon,   color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  label: 'Referido'    },
-  Empresa:    { icon: CompanyWebIcon, color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)',  label: 'Web empresa' },
-  Otro:       { icon: OtherSourceIcon,color: '#64748b', bg: 'rgba(100,116,139,0.12)', label: 'Otro'        },
+// SVG fallback icons for sources without domain logo
+const SVG_ICONS: Record<string, React.ElementType> = {
+  'Referido': ReferralIcon,
+  'Empresa':  CompanyWebIcon,
+  'Email':    EmailIcon,
+  'EmailHighBar': EmailIcon,
+  'ATS genérico': CompanyWebIcon,
 }
 
-export function SourceBadge({ source }: { source: Source }) {
-  const cfg = SOURCE_CONFIG[source]
-  const Icon = cfg.icon
+// Component: logo image with fallback to SVG icon
+export function SourceLogo({ source, size = 16 }: { source: string; size?: number }) {
+  const [failed, setFailed] = useState(false)
+  const domain = SOURCE_DOMAINS[source]
+  const { color } = getSourceColor(source)
+  const FallbackIcon = SVG_ICONS[source] ?? OtherSourceIcon
+
+  if (domain && !failed) {
+    return (
+      <img
+        src={clearbit(domain)}
+        alt={source}
+        width={size}
+        height={size}
+        style={{ borderRadius: 3, objectFit: 'contain', flexShrink: 0 }}
+        onError={() => setFailed(true)}
+      />
+    )
+  }
+
+  return <FallbackIcon size={size} color={color} />
+}
+
+export const KNOWN_SOURCES: string[] = [
+  'LinkedIn', 'Indeed', 'GetOnBoard', 'Glassdoor', 'Google Careers',
+  'InfoJobs', 'CompuTrabajo', 'Jooble', 'JobRapido', 'JobGether', 'Remotive',
+  'HackerRank', 'CodeSignal', 'Coderbyte', 'JazzHR', 'Lever',
+  'Greenhouse', 'Workday', 'BambooHR', 'Avature', 'Clerk', 'ATS genérico',
+  'Email', 'EmailHighBar',
+  'Mercado Libre', 'N5 Now', 'Oowlish', 'Globant',
+  'Referido', 'Empresa', 'Otro',
+]
+
+export function SourceBadge({ source }: { source: string }) {
+  const { color, bg } = getSourceColor(source)
   return (
     <span
       className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-semibold"
-      style={{ background: cfg.bg, color: cfg.color }}
+      style={{ background: bg, color }}
     >
-      <Icon size={12} />
-      {cfg.label}
+      <SourceLogo source={source} size={12} />
+      {source}
     </span>
   )
 }
+
+// Legacy exports kept for compatibility
+export function getSourceCfg(source: string) {
+  const { color, bg } = getSourceColor(source)
+  return { color, bg, label: source, icon: SVG_ICONS[source] ?? OtherSourceIcon }
+}
+
+export const SOURCE_CONFIG = Object.fromEntries(
+  KNOWN_SOURCES.map(s => [s, getSourceCfg(s)])
+)
