@@ -34,8 +34,6 @@ function darken(hex: string): string {
 export function BrandLogo({ iconSize = 32, fontSize = 18 }: BrandLogoProps) {
   const { theme } = useTheme()
 
-  const gradient = `linear-gradient(90deg, ${theme.textPrimary} 0%, ${theme.accentText} 100%)`
-
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: iconSize * 0.28 }}>
       <TrackbookIcon size={iconSize} accent={theme.accent} accentDark={darken(theme.accent)} />
@@ -45,10 +43,7 @@ export function BrandLogo({ iconSize = 32, fontSize = 18 }: BrandLogoProps) {
           fontSize,
           fontWeight: 800,
           lineHeight: 1,
-          background: gradient,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
+          color: theme.textPrimary,
         }}
       >
         Trackbook

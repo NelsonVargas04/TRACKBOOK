@@ -751,7 +751,7 @@ export default function SettingsPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs leading-snug" style={{ color: 'var(--color-text-muted)' }}>
+                        <p className="text-xs leading-snug line-clamp-2" style={{ color: 'var(--color-text-muted)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                           {t(th.descriptionKey)}
                         </p>
                       </div>
