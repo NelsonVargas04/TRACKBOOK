@@ -7,19 +7,27 @@ type AppInsert = Database['public']['Tables']['applications']['Insert']
 type AppWithActivity = AppRow & { activity_entries: Database['public']['Tables']['activity_entries']['Row'][] }
 
 export async function getApplications(): Promise<AppWithActivity[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { data, error } = await supabase
     .from('applications')
     .select('*, activity_entries(*)')
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
   if (error) throw error
   return (data ?? []) as unknown as AppWithActivity[]
 }
 
 export async function getApplicationById(id: number): Promise<AppWithActivity> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { data, error } = await supabase
     .from('applications')
     .select('*, activity_entries(*)')
     .eq('id', id)
+    .eq('user_id', user.id)
     .single()
   if (error) throw error
   return data as unknown as AppWithActivity
@@ -39,10 +47,14 @@ export async function createApplication(app: AppInsert) {
 }
 
 export async function updateApplication(id: number, updates: Partial<AppRow>) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { data, error } = await supabase
     .from('applications')
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq('id', id)
+    .eq('user_id', user.id)
     .select()
     .single()
   if (error) throw error
@@ -54,9 +66,13 @@ export async function updateApplicationStatus(id: number, status: Status) {
 }
 
 export async function deleteApplication(id: number) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { error } = await supabase
     .from('applications')
     .delete()
     .eq('id', id)
+    .eq('user_id', user.id)
   if (error) throw error
 }

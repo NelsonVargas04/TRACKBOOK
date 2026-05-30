@@ -4,9 +4,13 @@ import type { Database } from '@/lib/database.types'
 type CVInsert = Database['public']['Tables']['cvs']['Insert']
 
 export async function getCVs() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { data, error } = await supabase
     .from('cvs')
     .select('*')
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
   if (error) throw error
   return data
@@ -51,9 +55,13 @@ export async function setPrimaryCV(id: number) {
 }
 
 export async function deleteCV(id: number) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { error } = await supabase
     .from('cvs')
     .delete()
     .eq('id', id)
+    .eq('user_id', user.id)
   if (error) throw error
 }
