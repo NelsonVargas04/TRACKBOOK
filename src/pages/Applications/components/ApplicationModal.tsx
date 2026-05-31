@@ -54,10 +54,11 @@ interface Props {
   app: Application
   onClose: () => void
   onUpdate: (updated: Application) => void
+  onDelete?: () => void
 }
 
 
-export function ApplicationModal({ app, onClose, onUpdate }: Props) {
+export function ApplicationModal({ app, onClose, onUpdate, onDelete }: Props) {
   const { t } = useLang()
   const [data, setData] = useState<Application>(app)
   const [activeTab, setActiveTab] = useState<'info' | 'activity'>('info')
@@ -568,7 +569,19 @@ export function ApplicationModal({ app, onClose, onUpdate }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center gap-3 justify-end px-8 py-5 shrink-0" style={{ borderTop: '1px solid var(--color-border)' }}>
+        <div className="flex items-center gap-3 px-8 py-5 shrink-0" style={{ borderTop: '1px solid var(--color-border)' }}>
+          {onDelete && (
+            <button
+              onClick={() => { animatedClose(); onDelete() }}
+              className="flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-colors mr-auto"
+              style={{ fontSize: '15px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444' }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(239,68,68,0.18)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(239,68,68,0.1)')}
+            >
+              <Trash2 size={15} />
+              {t('modal.delete')}
+            </button>
+          )}
           <button onClick={animatedClose} className="px-6 py-3 rounded-xl font-medium hover:opacity-70 transition-opacity" style={{ fontSize: '15px', background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}>
             {t('modal.cancel')}
           </button>

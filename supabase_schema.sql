@@ -50,7 +50,7 @@ create table if not exists applications (
   role             text not null,
   company          text not null,
   status           text not null default 'Aplicada'
-                     check (status in ('Aplicada','Screening','Entrevista','Oferta','Rechazada')),
+                     check (status in ('Aplicada','En Proceso','Screening','Entrevista','Oferta','Ghosteado','Rechazada')),
   stars            smallint not null default 0 check (stars between 0 and 5),
   type             text not null default 'Remoto',
   salary           text,
@@ -58,7 +58,8 @@ create table if not exists applications (
   contact          text,
   tag              text,
   url              text,
-  source           text check (source in ('LinkedIn','Indeed','GetOnBoard','Glassdoor','Referido','Empresa','Otro')),
+  -- source es texto libre: la app ofrece ~30 plataformas y el usuario puede agregar las suyas
+  source           text,
   cv_id            bigint references cvs(id) on delete set null,
   cover_letter_id  bigint references cover_letters(id) on delete set null
 );

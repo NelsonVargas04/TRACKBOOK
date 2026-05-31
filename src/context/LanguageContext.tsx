@@ -174,6 +174,10 @@ const translations: Record<Language, Record<string, string>> = {
     'new.save':            'Guardar Postulación',
     'new.sourceRequired':  'obligatorio',
     'apps.addSuccess':     'Postulación añadida correctamente',
+    'apps.deleteTitle':    '¿Eliminar esta postulación?',
+    'apps.deleteDesc':     'será eliminada. Tendrás 5 segundos para deshacer la acción.',
+    'apps.confirmDelete':  'Sí, eliminar',
+    'apps.toastDeleted':   'Postulación eliminada',
     'new.searchCV':        'Buscar CV...',
     'new.searchCL':        'Buscar carta...',
     'new.noResults':       'Sin resultados para',
@@ -200,6 +204,7 @@ const translations: Record<Language, Record<string, string>> = {
     'modal.noActivity':        'Sin actividad registrada',
     'modal.noActivitySub':     'Añade entrevistas, llamadas y actualizaciones del proceso',
     'modal.done':              'Listo',
+    'modal.delete':            'Eliminar',
     'modal.saveChanges':       'Guardar Cambios',
 
     // Event presets
@@ -582,6 +587,10 @@ const translations: Record<Language, Record<string, string>> = {
     'new.save':             'Save Application',
     'new.sourceRequired':   'required',
     'apps.addSuccess':      'Application added successfully',
+    'apps.deleteTitle':     'Delete this application?',
+    'apps.deleteDesc':      'will be deleted. You have 5 seconds to undo.',
+    'apps.confirmDelete':   'Yes, delete',
+    'apps.toastDeleted':    'Application deleted',
     'new.searchCV':         'Search CV...',
     'new.searchCL':         'Search letter...',
     'new.noResults':        'No results for',
@@ -608,6 +617,7 @@ const translations: Record<Language, Record<string, string>> = {
     'modal.noActivity':        'No activity recorded',
     'modal.noActivitySub':     'Add interviews, calls, and process updates',
     'modal.done':              'Done',
+    'modal.delete':            'Delete',
     'modal.saveChanges':       'Save Changes',
 
     // Event presets

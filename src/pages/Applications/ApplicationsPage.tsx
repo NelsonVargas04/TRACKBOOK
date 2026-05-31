@@ -7,9 +7,11 @@ import { BoardView } from './components/BoardView'
 import { NewApplicationModal } from './components/NewApplicationModal'
 import { ApplicationModal } from './components/ApplicationModal'
 import { SuccessToast } from '@/components/ui/SuccessToast'
+import { UndoToast } from '@/components/ui/UndoToast'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { useClickOutside } from '@/hooks/useClickOutside'
-import { getApplications, createApplication, updateApplication } from '@/services/applications.service'
+import { getApplications, createApplication, updateApplication, deleteApplication } from '@/services/applications.service'
 import { useLang } from '@/context/LanguageContext'
 import type { Application, Status } from '@/data/mockApplications'
 
@@ -54,6 +56,9 @@ export default function ApplicationsPage() {
   const [saving, setSaving] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [selected, setSelected] = useState<Application | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<Application | null>(null)
+  const [toasts, setToasts] = useState<{ id: number; message: string; onUndo: () => void }[]>([])
+  const toastId = useRef(0)
 
   // Filters
   const [search, setSearch] = useState('')
@@ -160,13 +165,56 @@ export default function ApplicationsPage() {
     }
   }
 
+  async function confirmDeleteApp(app: Application) {
+    // Optimistic removal — keep index so undo restores position
+    const index = apps.findIndex((a) => a.id === app.id)
+    setApps((prev) => prev.filter((a) => a.id !== app.id))
+
+    let undone = false
+    const id = toastId.current++
+    setToasts((prev) => [
+      ...prev,
+      {
+        id,
+        message: `${t('apps.toastDeleted')} — ${app.company}`,
+        onUndo: () => {
+          undone = true
+          setApps((prev) => {
+            if (prev.find((a) => a.id === app.id)) return prev
+            const next = [...prev]
+            next.splice(index < 0 ? next.length : index, 0, app)
+            return next
+          })
+        },
+      },
+    ])
+
+    await new Promise((r) => setTimeout(r, 5000))
+    if (!undone) {
+      deleteApplication(app.id).catch(console.error)
+    }
+  }
+
+  function dismissToast(id: number) {
+    setToasts((prev) => prev.filter((tst) => tst.id !== id))
+  }
+
   return (
     <div className="flex h-screen w-screen overflow-hidden" style={{ background: 'var(--color-bg)' }}>
-      {showSuccess && (
-        <div className="fixed bottom-6 left-1/2 z-[60]" style={{ transform: 'translateX(-50%)' }}>
+      {/* Toasts — stacked bottom-center */}
+      <div className="fixed bottom-6 left-1/2 z-[60] flex flex-col gap-2" style={{ transform: 'translateX(-50%)' }}>
+        {showSuccess && (
           <SuccessToast message={t('apps.addSuccess')} onDismiss={() => setShowSuccess(false)} />
-        </div>
-      )}
+        )}
+        {toasts.map((tst) => (
+          <UndoToast
+            key={tst.id}
+            message={tst.message}
+            onUndo={tst.onUndo}
+            onDismiss={() => dismissToast(tst.id)}
+          />
+        ))}
+      </div>
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
@@ -414,6 +462,17 @@ export default function ApplicationsPage() {
           app={selected}
           onClose={() => setSelected(null)}
           onUpdate={handleUpdate}
+          onDelete={() => { const app = selected; setSelected(null); setConfirmDelete(app) }}
+        />
+      )}
+
+      {confirmDelete && (
+        <ConfirmModal
+          title={t('apps.deleteTitle')}
+          description={`"${confirmDelete.role} · ${confirmDelete.company}" ${t('apps.deleteDesc')}`}
+          confirmLabel={t('apps.confirmDelete')}
+          onConfirm={() => confirmDeleteApp(confirmDelete)}
+          onClose={() => setConfirmDelete(null)}
         />
       )}
     </div>
