@@ -15,6 +15,7 @@ export default function SourcesChart() {
   const { t } = useLang()
   const [rows, setRows] = useState<SourceRow[]>([])
   const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     getApplications().then((apps) => {
@@ -36,8 +37,25 @@ export default function SourcesChart() {
           color: PALETTE[i % PALETTE.length],
         }))
       setRows(sorted)
-    }).catch(console.error)
+    }).catch(console.error).finally(() => setLoading(false))
   }, [])
+
+  if (loading) {
+    return (
+      <div
+        className="rounded-xl p-6 flex flex-col h-full animate-pulse"
+        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+      >
+        <div className="mb-4">
+          <div className="h-5 w-32 rounded-full mb-2" style={{ background: 'var(--color-bg)' }} />
+          <div className="h-3 w-40 rounded-full" style={{ background: 'var(--color-bg)' }} />
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-24 h-24 rounded-full" style={{ background: 'var(--color-bg)' }} />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div

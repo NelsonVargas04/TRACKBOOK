@@ -10,6 +10,7 @@ export default function TimelineChart() {
   const gradientId = useId().replace(/:/g, '')
   const [points, setPoints] = useState<Point[]>([])
   const [peak, setPeak] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     getApplications().then((rows) => {
@@ -33,10 +34,26 @@ export default function TimelineChart() {
           .toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
         return { x: label, y: count }
       }))
-    }).catch(console.error)
+    }).catch(console.error).finally(() => setLoading(false))
   }, [])
 
   const data = [{ id: 'apps', data: points }]
+
+  if (loading) {
+    return (
+      <div className="rounded-xl p-6 animate-pulse"
+        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <div className="h-5 w-40 rounded-full mb-2" style={{ background: 'var(--color-bg)' }} />
+            <div className="h-3 w-48 rounded-full" style={{ background: 'var(--color-bg)' }} />
+          </div>
+          <div className="w-12 h-10 rounded-full" style={{ background: 'var(--color-bg)' }} />
+        </div>
+        <div className="h-48 rounded-lg" style={{ background: 'var(--color-bg)' }} />
+      </div>
+    )
+  }
 
   return (
     <div
