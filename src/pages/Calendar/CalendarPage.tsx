@@ -51,14 +51,20 @@ function toFullCalEvent(e: CalEvent): EventInput {
 function EventContent({ event }: EventContentArg) {
   const ep = event.extendedProps as CalEvent
   const cfg = EVENT_TYPES[ep.type] ?? EVENT_TYPES['Seguimiento']
+  const displayName = ep.company || ep.title || ep.type
   return (
-    <div className="flex items-center gap-1 px-1 py-0.5 w-full truncate">
+    <div
+      className="flex items-center gap-1 px-1.5 py-0.5 w-full truncate rounded-md"
+      style={{ background: cfg.bg }}
+    >
       <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: cfg.color }} />
       {ep.time && (
-        <span className="text-[10px] font-bold shrink-0" style={{ color: cfg.color }}>{ep.time}</span>
+        <span className="text-[10px] font-bold tabular-nums shrink-0" style={{ color: cfg.color }}>
+          {ep.time}
+        </span>
       )}
       <span className="truncate text-[11px] font-semibold" style={{ color: cfg.color }}>
-        {ep.company || ep.title}
+        {displayName}
       </span>
     </div>
   )
@@ -70,6 +76,7 @@ export default function CalendarPage() {
   const { t } = useLang()
   const calRef = useRef<FullCalendar>(null)
   const [events, setEvents] = useState<CalEvent[]>([])
+  const [calendarKey, setCalendarKey] = useState(0)
   const [loading, setLoading] = useState(true)
   const [title, setTitle] = useState('')
   const view = 'dayGridMonth'
@@ -107,13 +114,14 @@ export default function CalendarPage() {
         date: e.date,
         time,
         type: labelToType(e.label),
-        company: e.applications?.company ?? e.note?.replace(/^T\d{2}:\d{2}\|?/, '') ?? '',
+        company: e.applications?.company ?? (cleanNote ? cleanNote.split(' — ')[0] : '') ?? '',
         role: e.applications?.role ?? '',
         note: cleanNote,
       }
     })
 
     setEvents([...appEvts, ...actEvts])
+    setCalendarKey((k) => k + 1)
     setLoading(false)
   }
 
@@ -139,16 +147,14 @@ export default function CalendarPage() {
 
   async function handleEventDrop(arg: EventDropArg) {
     const ep = arg.event.extendedProps as CalEvent
+    if (!ep.id.startsWith('act-')) { arg.revert(); return }
+
     const newDate = arg.event.startStr.slice(0, 10)
-    if (!newDate) return arg.revert()
-
-    // Only activity entries can be moved (act-xxx ids)
-    if (!ep.id.startsWith('act-')) return arg.revert()
-
     const numId = Number(ep.id.replace('act-', ''))
     const { error } = await supabase.from('activity_entries').update({ date: newDate }).eq('id', numId)
-    if (error) arg.revert()
-    else setEvents((prev) => prev.map((e) => e.id === ep.id ? { ...e, date: newDate } : e))
+    if (error) { arg.revert(); return }
+    // Reload from DB so state is always in sync with Supabase
+    await loadEvents()
   }
 
   async function deleteEvent(id: string) {
@@ -156,7 +162,7 @@ export default function CalendarPage() {
       const numId = Number(id.replace('act-', ''))
       await supabase.from('activity_entries').delete().eq('id', numId)
     }
-    setEvents((prev) => prev.filter((e) => e.id !== id))
+    await loadEvents()
     setSelected(null)
   }
 
@@ -268,7 +274,7 @@ export default function CalendarPage() {
                   ref={calRef}
                   plugins={[dayGridPlugin, listPlugin, interactionPlugin]}
                   initialView={view}
-                  key={view}
+                  key={calendarKey}
                   events={events.map(toFullCalEvent)}
                   eventClick={handleEventClick}
                   eventContent={(arg) => <EventContent {...arg} />}
