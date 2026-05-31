@@ -5,7 +5,7 @@ import { useClickOutside } from '@/hooks/useClickOutside'
 import { useCV } from '@/context/CVContext'
 import { useCoverLetter } from '@/context/CoverLetterContext'
 import { useLang } from '@/context/LanguageContext'
-import { KNOWN_SOURCES, getSourceCfg } from '@/components/ui/SourceIcons'
+import { SourceCombobox } from '@/components/ui/SourceIcons'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { statusConfig } from '@/data/mockApplications'
 import type { Application, Status, Source } from '@/data/mockApplications'
@@ -18,71 +18,6 @@ interface Props {
 
 const statusOptions: Status[] = ['Aplicada', 'En Proceso', 'Screening', 'Entrevista', 'Oferta', 'Ghosteado', 'Rechazada']
 
-function SourceCombobox({ value, onChange, error }: { value: Source | null; onChange: (v: Source | null) => void; error: boolean }) {
-  const [query, setQuery] = useState('')
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  useClickOutside(ref, () => setOpen(false))
-
-  const filtered = KNOWN_SOURCES.filter(s => s.toLowerCase().includes(query.toLowerCase()))
-  const cfg = value ? getSourceCfg(value) : null
-
-  return (
-    <div ref={ref} className="relative">
-      <div
-        className="flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer"
-        style={{ background: 'var(--color-bg)', border: `1.5px solid ${error ? '#ef4444' : open ? 'var(--color-accent)' : 'var(--color-border)'}` }}
-        onClick={() => setOpen(o => !o)}
-      >
-        {cfg && <cfg.icon size={14} style={{ color: cfg.color, flexShrink: 0 }} />}
-        <input
-          value={query || (value && !open ? value : query)}
-          onChange={e => { setQuery(e.target.value); setOpen(true) }}
-          onFocus={() => { setQuery(''); setOpen(true) }}
-          placeholder={value ?? 'Buscar plataforma...'}
-          className="flex-1 bg-transparent outline-none text-sm"
-          style={{ color: 'var(--color-text-primary)' }}
-        />
-        <ChevronDown size={14} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
-      </div>
-      {open && (
-        <div
-          className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden"
-          style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}
-        >
-          <div className="max-h-52 overflow-y-auto">
-            {filtered.length === 0 && query && (
-              <button
-                onMouseDown={() => { onChange(query); setQuery(''); setOpen(false) }}
-                className="w-full text-left px-4 py-2.5 text-sm"
-                style={{ color: 'var(--color-accent-text)' }}
-              >
-                Usar "{query}"
-              </button>
-            )}
-            {filtered.map(s => {
-              const c = getSourceCfg(s)
-              return (
-                <button
-                  key={s}
-                  onMouseDown={() => { onChange(s); setQuery(''); setOpen(false) }}
-                  className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 transition-colors"
-                  style={{ color: value === s ? 'var(--color-accent-text)' : 'var(--color-text-primary)', background: value === s ? 'var(--color-accent-light)' : 'transparent' }}
-                  onMouseEnter={e => { if (value !== s) e.currentTarget.style.background = 'var(--color-bg)' }}
-                  onMouseLeave={e => { if (value !== s) e.currentTarget.style.background = 'transparent' }}
-                >
-                  <c.icon size={13} style={{ color: c.color, flexShrink: 0 }} />
-                  {s}
-                  {value === s && <Check size={12} className="ml-auto" style={{ color: 'var(--color-accent-text)' }} />}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
 
 export function NewApplicationModal({ onClose, onAdd, loading = false }: Props) {
   const { t } = useLang()

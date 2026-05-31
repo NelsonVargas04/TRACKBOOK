@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { KNOWN_SOURCES, getSourceCfg, SourceLogo } from '@/components/ui/SourceIcons'
+import { SourceCombobox } from '@/components/ui/SourceIcons'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useLang } from '@/context/LanguageContext'
 import { statusConfig } from '@/data/mockApplications'
@@ -56,32 +56,6 @@ interface Props {
   onUpdate: (updated: Application) => void
 }
 
-function SourcePickerInline({ value, onChange }: { value: string | null; onChange: (v: string | null) => void }) {
-  return (
-    <div className="flex gap-2 flex-wrap">
-      {KNOWN_SOURCES.map((s) => {
-        const { color } = getSourceCfg(s)
-        const isSelected = value === s
-        return (
-          <button
-            key={s}
-            onClick={() => onChange(isSelected ? null : s)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold transition-all"
-            style={{
-              fontSize: '13px',
-              background: isSelected ? color : 'var(--color-bg)',
-              border: `1.5px solid ${isSelected ? color : 'var(--color-border)'}`,
-              color: isSelected ? '#fff' : color,
-            }}
-          >
-            <SourceLogo source={s} size={13} />
-            {s}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
 
 export function ApplicationModal({ app, onClose, onUpdate }: Props) {
   const { t } = useLang()
@@ -362,7 +336,7 @@ export function ApplicationModal({ app, onClose, onUpdate }: Props) {
                 <label className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--color-text-muted)' }}>
                   {t('modal.offerSource')}
                 </label>
-                <SourcePickerInline
+                <SourceCombobox
                   value={data.source ?? null}
                   onChange={(s) => patch({ source: s ?? undefined })}
                 />
