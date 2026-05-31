@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
+import { Spinner } from '@/components/ui/Spinner'
 
 export default function CallbackPage() {
   const navigate = useNavigate()
@@ -47,7 +48,7 @@ export default function CallbackPage() {
 
   return (
     <div className="flex h-screen w-screen items-center justify-center" style={{ background: '#16171f' }}>
-      <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: '#7C6FCD', borderTopColor: 'transparent' }} />
+      <Spinner size={32} />
     </div>
   )
 }

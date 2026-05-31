@@ -215,9 +215,7 @@ export default function ApplicationsPage() {
           </div>
 
           {loading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-accent)', borderTopColor: 'transparent' }} />
-            </div>
+            <ApplicationsSkeleton />
           ) : (
             <>
               {/* Filters bar */}
@@ -418,6 +416,43 @@ export default function ApplicationsPage() {
           onUpdate={handleUpdate}
         />
       )}
+    </div>
+  )
+}
+
+const SKEL_COLS = '48px 2.2fr 1.2fr 1fr 1fr 1.1fr 1.1fr'
+
+function ApplicationsSkeleton() {
+  return (
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
+      {/* Header row */}
+      <div className="grid items-center px-6 py-4" style={{ gridTemplateColumns: SKEL_COLS, background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div key={i} className="h-2.5 rounded-full animate-pulse" style={{ background: 'var(--color-border)', width: i === 0 ? 20 : '60%' }} />
+        ))}
+      </div>
+      {/* Data rows */}
+      {Array.from({ length: 7 }).map((_, i) => (
+        <div key={i} className="grid items-center px-6 animate-pulse" style={{ gridTemplateColumns: SKEL_COLS, minHeight: 68, borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+          <div className="h-2.5 w-5 rounded-full" style={{ background: 'var(--color-bg)' }} />
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg shrink-0" style={{ background: 'var(--color-bg)' }} />
+            <div className="flex flex-col gap-1.5">
+              <div className="h-3 rounded-full" style={{ background: 'var(--color-bg)', width: 120 + (i % 3) * 30 }} />
+              <div className="h-2 rounded-full" style={{ background: 'var(--color-bg)', width: 80 }} />
+            </div>
+          </div>
+          <div className="h-6 rounded-lg" style={{ background: 'var(--color-bg)', width: 80 }} />
+          <div className="h-2.5 rounded-full" style={{ background: 'var(--color-bg)', width: 70 }} />
+          <div className="h-2.5 rounded-full" style={{ background: 'var(--color-bg)', width: 70 }} />
+          <div className="h-6 rounded-full" style={{ background: 'var(--color-bg)', width: 90 }} />
+          <div className="flex gap-0.5">
+            {Array.from({ length: 5 }).map((_, s) => (
+              <div key={s} className="w-3.5 h-3.5 rounded-sm" style={{ background: 'var(--color-bg)' }} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

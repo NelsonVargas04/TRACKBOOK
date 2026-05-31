@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Star, FileText, AlertCircle } from 'lucide-react'
+import { X, Star, FileText, AlertCircle, Loader2 } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import type { CoverLetter } from '@/context/CoverLetterContext'
 import { useLang } from '@/context/LanguageContext'
@@ -209,11 +209,7 @@ export function CoverLetterModal({ onClose, onSave, primaryCLId, editing, loadin
             className="px-6 py-2.5 rounded-lg font-semibold text-white transition-opacity flex items-center gap-2"
             style={{ fontSize: '14px', background: 'var(--color-accent)', opacity: loading ? 0.4 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
           >
-            {loading && (
-              <svg className="animate-spin" width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-              </svg>
-            )}
+            {loading && <Loader2 size={14} className="animate-spin" />}
             {loading ? t('upload.uploading') : editing ? t('cl.saveEdit') : t('cl.saveNew')}
           </button>
         </div>

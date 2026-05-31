@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Upload, FileText, X, Star } from 'lucide-react'
+import { Upload, FileText, X, Star, Loader2 } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { useLang } from '@/context/LanguageContext'
 
@@ -149,11 +149,7 @@ export function UploadModal({ onClose, onAdd, loading = false }: UploadModalProp
             className="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-opacity flex items-center gap-2"
             style={{ background: 'var(--color-accent)', opacity: pending && !loading ? 1 : 0.4, cursor: pending && !loading ? 'pointer' : 'not-allowed' }}
           >
-            {loading && (
-              <svg className="animate-spin" width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-              </svg>
-            )}
+            {loading && <Loader2 size={14} className="animate-spin" />}
             {loading ? t('upload.uploading') : t('upload.save')}
           </button>
         </div>

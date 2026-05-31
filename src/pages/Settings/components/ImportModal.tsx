@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Upload, FileSpreadsheet, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
-import { parseExcelFile, importApplications, type ImportRow } from '@/services/import.service'
+import { parseFile, importApplications, type ImportRow } from '@/services/import.service'
 import { useLang } from '@/context/LanguageContext'
 
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
@@ -42,7 +42,7 @@ export function ImportModal({ onClose, onDone }: Props) {
     setParseError(null)
     setRows(null)
     try {
-      const parsed = await parseExcelFile(file)
+      const parsed = await parseFile(file)
       if (parsed.length === 0) { setParseError(t('import.noRows')); return }
       setRows(parsed)
     } catch {
@@ -165,7 +165,7 @@ export function ImportModal({ onClose, onDone }: Props) {
             {/* UPLOAD */}
             {imported === null && !rows && (
               <>
-                <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={onFileInput} />
+                <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={onFileInput} />
                 <div
                   onClick={() => fileRef.current?.click()}
                   onDragOver={(e) => { e.preventDefault(); setDragging(true) }}

@@ -56,7 +56,62 @@ function excelDateToISO(serial: number): string {
   return isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString()
 }
 
-export function parseExcelFile(file: File): Promise<ImportRow[]> {
+const VALID_STATUSES = new Set(['Aplicada', 'En Proceso', 'Screening', 'Entrevista', 'Oferta', 'Rechazada', 'Ghosteado'])
+
+// Parse Trackbook's own CSV export format
+function parseTrackbookCSV(file: File): Promise<ImportRow[]> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string
+        const wb = XLSX.read(text, { type: 'string' })
+        const sheet = wb.Sheets[wb.SheetNames[0]]
+        const raw: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 })
+
+        const rows: ImportRow[] = []
+        // Row 0 = headers: Empresa,Puesto,Estado,Modalidad,Estrellas,Salario,Origen,Contacto,URL,Notas,Fecha Aplicación,Última Actualización
+        for (let i = 1; i < raw.length; i++) {
+          const r = raw[i]
+          const company = String(r[0] ?? '').trim()
+          const role    = String(r[1] ?? '').trim()
+          if (!company || !role) continue
+
+          const status  = String(r[2] ?? '').trim()
+          const type    = String(r[3] ?? 'Remoto').trim() || 'Remoto'
+          const source  = String(r[6] ?? '').trim() || 'Otro'
+          const contact = String(r[7] ?? '').trim()
+          const url     = String(r[8] ?? '').trim()
+          const note    = String(r[9] ?? '').trim()
+          const dateRaw = String(r[10] ?? '').trim()
+
+          const created_at = dateRaw
+            ? (new Date(dateRaw).toISOString() || new Date().toISOString())
+            : new Date().toISOString()
+
+          rows.push({
+            company, role,
+            status: VALID_STATUSES.has(status) ? status : 'Aplicada',
+            type,
+            source,
+            contact,
+            url,
+            note,
+            created_at,
+          })
+        }
+        resolve(rows)
+      } catch (err) {
+        reject(err)
+      }
+    }
+    reader.onerror = () => reject(new Error('Error leyendo el archivo'))
+    reader.readAsText(file, 'utf-8')
+  })
+}
+
+// Parse Job Tracker Excel format (.xlsx)
+function parseExcelFile(file: File): Promise<ImportRow[]> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = (e) => {
@@ -80,13 +135,12 @@ export function parseExcelFile(file: File): Promise<ImportRow[]> {
           const excelStatus   = String(r[14] ?? '').trim()
           const nextAction    = String(r[15] ?? '').trim()
 
-          // Try to get hyperlink URL from cell E (index 4)
           const cellAddr = XLSX.utils.encode_cell({ r: i, c: 4 })
           const cell = sheet[cellAddr]
           const url = cell?.l?.Target ?? ''
 
           const contact = [recruiterName, recruiterEmail].filter(Boolean).join(' — ')
-          const note = nextAction || undefined
+          const note = nextAction || ''
 
           let created_at: string
           if (typeof applyDate === 'number') {
@@ -98,14 +152,10 @@ export function parseExcelFile(file: File): Promise<ImportRow[]> {
           }
 
           rows.push({
-            company,
-            role,
+            company, role,
             source: mapSource(platform),
             status: mapStatus(excelStatus),
-            url,
-            contact,
-            note: note ?? '',
-            created_at,
+            url, contact, note, created_at,
             type: 'Remoto',
           })
         }
@@ -117,6 +167,12 @@ export function parseExcelFile(file: File): Promise<ImportRow[]> {
     reader.onerror = () => reject(new Error('Error leyendo el archivo'))
     reader.readAsArrayBuffer(file)
   })
+}
+
+export function parseFile(file: File): Promise<ImportRow[]> {
+  return file.name.toLowerCase().endsWith('.csv')
+    ? parseTrackbookCSV(file)
+    : parseExcelFile(file)
 }
 
 export async function importApplications(

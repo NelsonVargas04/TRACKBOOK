@@ -3,8 +3,8 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
-import type { EventInput, EventClickArg, EventContentArg, EventDropArg } from '@fullcalendar/core'
-import { ChevronLeft, ChevronRight, Plus, X, Trash2 } from 'lucide-react'
+import type { EventInput, EventClickArg, EventContentArg } from '@fullcalendar/core'
+import { ChevronLeft, ChevronRight, X, Trash2 } from 'lucide-react'
 import Sidebar from '@/pages/Dashboard/components/Sidebar'
 import Header from '@/pages/Dashboard/components/Header'
 import { supabase } from '@/lib/supabase'
@@ -139,22 +139,8 @@ export default function CalendarPage() {
     setTitle(api.view.title)
   }
 
-  const [dragOverTrash, setDragOverTrash] = useState(false)
-
   function handleEventClick(arg: EventClickArg) {
     setSelected(arg.event.extendedProps as CalEvent)
-  }
-
-  async function handleEventDrop(arg: EventDropArg) {
-    const ep = arg.event.extendedProps as CalEvent
-    if (!ep.id.startsWith('act-')) { arg.revert(); return }
-
-    const newDate = arg.event.startStr.slice(0, 10)
-    const numId = Number(ep.id.replace('act-', ''))
-    const { error } = await supabase.from('activity_entries').update({ date: newDate }).eq('id', numId)
-    if (error) { arg.revert(); return }
-    // Reload from DB so state is always in sync with Supabase
-    await loadEvents()
   }
 
   async function deleteEvent(id: string) {
@@ -231,34 +217,10 @@ export default function CalendarPage() {
               {t('calendar.today')}
             </button>
 
-            <div className="ml-auto flex items-center gap-2">
-              {/* Trash drop zone */}
-              <div
-                onDragOver={(e) => { e.preventDefault(); setDragOverTrash(true) }}
-                onDragLeave={() => setDragOverTrash(false)}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  setDragOverTrash(false)
-                  if (selected) deleteEvent(selected.id)
-                }}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all"
-                style={{
-                  background: dragOverTrash ? 'rgba(239,68,68,0.2)' : 'var(--color-surface)',
-                  border: `1px solid ${dragOverTrash ? '#ef4444' : 'var(--color-border)'}`,
-                  color: dragOverTrash ? '#ef4444' : 'var(--color-text-muted)',
-                }}
-              >
-                <Trash2 size={14} />
-                <span className="hidden sm:inline">{t('calendar.dropToDelete')}</span>
-              </div>
-
-              {/* New event */}
-              <button onClick={() => setShowNewModal(true)} className="flex items-center gap-2 px-4 py-1.5 rounded-xl text-sm font-semibold"
-                style={{ background: 'var(--color-accent)', color: '#fff' }}>
-                <Plus size={15} />
-                {t('calendar.newEvent')}
-              </button>
-            </div>
+            <button onClick={() => setShowNewModal(true)} className="ml-auto px-4 py-1.5 rounded-xl text-sm font-semibold"
+              style={{ background: 'var(--color-accent)', color: '#fff' }}>
+              {t('calendar.newEvent')}
+            </button>
           </div>
 
           {/* Main content */}
@@ -266,9 +228,7 @@ export default function CalendarPage() {
             {/* Calendar */}
             <div className="flex-1 overflow-auto rounded-xl" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
               {loading ? (
-                <div className="flex items-center justify-center h-full animate-pulse">
-                  <div className="w-12 h-12 rounded-full" style={{ background: 'var(--color-bg)' }} />
-                </div>
+                <CalendarSkeleton />
               ) : (
                 <FullCalendar
                   ref={calRef}
@@ -283,8 +243,6 @@ export default function CalendarPage() {
                   locale="es"
                   firstDay={1}
                   dayMaxEvents={3}
-                  editable
-                  eventDrop={handleEventDrop}
                   noEventsText={t('calendar.noEvents')}
                   datesSet={(arg) => setTitle(arg.view.title)}
                 />
@@ -443,6 +401,40 @@ export default function CalendarPage() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+const WEEK_DAYS = 7
+const WEEKS = 5
+
+function CalendarSkeleton() {
+  return (
+    <div className="flex flex-col h-full animate-pulse">
+      {/* Day-of-week header */}
+      <div className="grid" style={{ gridTemplateColumns: `repeat(${WEEK_DAYS}, 1fr)`, borderBottom: '1px solid var(--color-border)' }}>
+        {Array.from({ length: WEEK_DAYS }).map((_, i) => (
+          <div key={i} className="flex justify-center py-3">
+            <div className="h-2.5 w-6 rounded-full" style={{ background: 'var(--color-bg)' }} />
+          </div>
+        ))}
+      </div>
+      {/* Week rows */}
+      {Array.from({ length: WEEKS }).map((_, w) => (
+        <div key={w} className="grid flex-1" style={{ gridTemplateColumns: `repeat(${WEEK_DAYS}, 1fr)`, borderBottom: w < WEEKS - 1 ? '1px solid var(--color-border)' : 'none' }}>
+          {Array.from({ length: WEEK_DAYS }).map((_, d) => (
+            <div key={d} className="flex flex-col gap-1.5 p-2" style={{ borderRight: d < WEEK_DAYS - 1 ? '1px solid var(--color-border)' : 'none' }}>
+              <div className="h-5 w-5 rounded-full self-end" style={{ background: 'var(--color-bg)' }} />
+              {(w * WEEK_DAYS + d) % 3 === 0 && (
+                <div className="h-4 rounded-md" style={{ background: 'var(--color-bg)', width: '80%' }} />
+              )}
+              {(w * WEEK_DAYS + d) % 5 === 0 && (
+                <div className="h-4 rounded-md" style={{ background: 'var(--color-bg)', width: '60%' }} />
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   )
 }
