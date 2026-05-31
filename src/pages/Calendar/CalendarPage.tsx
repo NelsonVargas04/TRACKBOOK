@@ -3,8 +3,8 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
-import type { EventInput, EventClickArg, EventContentArg } from '@fullcalendar/core'
-import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react'
+import type { EventInput, EventClickArg, EventContentArg, EventDropArg } from '@fullcalendar/core'
+import { ChevronLeft, ChevronRight, Plus, X, Trash2 } from 'lucide-react'
 import Sidebar from '@/pages/Dashboard/components/Sidebar'
 import Header from '@/pages/Dashboard/components/Header'
 import { supabase } from '@/lib/supabase'
@@ -35,10 +35,12 @@ type CalEvent = {
 
 function toFullCalEvent(e: CalEvent): EventInput {
   const cfg = EVENT_TYPES[e.type] ?? EVENT_TYPES['Seguimiento']
+  const start = e.time ? `${e.date}T${e.time}:00` : e.date
   return {
     id: e.id,
-    title: e.time ? `${e.time} ${e.company}` : e.company,
-    date: e.date,
+    title: e.company || e.title,
+    start,
+    allDay: !e.time,
     backgroundColor: cfg.bg,
     borderColor: cfg.color,
     textColor: cfg.color,
@@ -52,8 +54,11 @@ function EventContent({ event }: EventContentArg) {
   return (
     <div className="flex items-center gap-1 px-1 py-0.5 w-full truncate">
       <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: cfg.color }} />
+      {ep.time && (
+        <span className="text-[10px] font-bold shrink-0" style={{ color: cfg.color }}>{ep.time}</span>
+      )}
       <span className="truncate text-[11px] font-semibold" style={{ color: cfg.color }}>
-        {event.title}
+        {ep.company || ep.title}
       </span>
     </div>
   )
@@ -67,7 +72,7 @@ export default function CalendarPage() {
   const [events, setEvents] = useState<CalEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [title, setTitle] = useState('')
-  const [view, setView] = useState<'dayGridMonth' | 'listMonth'>('dayGridMonth')
+  const view = 'dayGridMonth'
   const [selected, setSelected] = useState<CalEvent | null>(null)
   const [showNewModal, setShowNewModal] = useState(false)
   const [form, setForm] = useState<NewEventForm>({ title: '', company: '', date: new Date().toISOString().slice(0,10), time: '', type: 'Entrevista', note: '' })
@@ -91,15 +96,22 @@ export default function CalendarPage() {
       role: a.role,
     }))
 
-    const actEvts: CalEvent[] = (acts ?? []).map((e: any) => ({
-      id: `act-${e.id}`,
-      title: e.label,
-      date: e.date,
-      type: labelToType(e.label),
-      company: e.applications?.company ?? '',
-      role: e.applications?.role ?? '',
-      note: e.note ?? undefined,
-    }))
+    const actEvts: CalEvent[] = (acts ?? []).map((e: any) => {
+      // Parse time from note: format "T14:00|actual note" or plain note
+      const timeMatch = (e.note ?? '').match(/^T(\d{2}:\d{2})\|?(.*)$/)
+      const time = timeMatch ? timeMatch[1] : undefined
+      const cleanNote = timeMatch ? (timeMatch[2] || undefined) : (e.note ?? undefined)
+      return {
+        id: `act-${e.id}`,
+        title: e.label,
+        date: e.date,
+        time,
+        type: labelToType(e.label),
+        company: e.applications?.company ?? e.note?.replace(/^T\d{2}:\d{2}\|?/, '') ?? '',
+        role: e.applications?.role ?? '',
+        note: cleanNote,
+      }
+    })
 
     setEvents([...appEvts, ...actEvts])
     setLoading(false)
@@ -119,16 +131,33 @@ export default function CalendarPage() {
     setTitle(api.view.title)
   }
 
-  function switchView(v: 'dayGridMonth' | 'listMonth') {
-    setView(v)
-    setTimeout(() => {
-      const api = calRef.current?.getApi()
-      if (api) setTitle(api.view.title)
-    }, 50)
-  }
+  const [dragOverTrash, setDragOverTrash] = useState(false)
 
   function handleEventClick(arg: EventClickArg) {
     setSelected(arg.event.extendedProps as CalEvent)
+  }
+
+  async function handleEventDrop(arg: EventDropArg) {
+    const ep = arg.event.extendedProps as CalEvent
+    const newDate = arg.event.startStr.slice(0, 10)
+    if (!newDate) return arg.revert()
+
+    // Only activity entries can be moved (act-xxx ids)
+    if (!ep.id.startsWith('act-')) return arg.revert()
+
+    const numId = Number(ep.id.replace('act-', ''))
+    const { error } = await supabase.from('activity_entries').update({ date: newDate }).eq('id', numId)
+    if (error) arg.revert()
+    else setEvents((prev) => prev.map((e) => e.id === ep.id ? { ...e, date: newDate } : e))
+  }
+
+  async function deleteEvent(id: string) {
+    if (id.startsWith('act-')) {
+      const numId = Number(id.replace('act-', ''))
+      await supabase.from('activity_entries').delete().eq('id', numId)
+    }
+    setEvents((prev) => prev.filter((e) => e.id !== id))
+    setSelected(null)
   }
 
   async function saveNewEvent() {
@@ -136,7 +165,9 @@ export default function CalendarPage() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
-      const noteStr = [form.title, form.note].filter(Boolean).join(' — ')
+      // Encode time + company in note: "T14:00|Company — note"
+      const parts = [form.company, form.note].filter(Boolean).join(' — ')
+      const noteStr = form.time ? `T${form.time}|${parts}` : (parts || form.title)
       await (supabase.from('activity_entries') as any).insert({
         user_id: user.id,
         label: form.type,
@@ -195,15 +226,26 @@ export default function CalendarPage() {
             </button>
 
             <div className="ml-auto flex items-center gap-2">
-              {/* View toggle */}
-              <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
-                {(['dayGridMonth', 'listMonth'] as const).map((v) => (
-                  <button key={v} onClick={() => switchView(v)} className="px-4 py-1.5 text-sm font-semibold transition-colors"
-                    style={{ background: view === v ? 'var(--color-accent)' : 'var(--color-surface)', color: view === v ? '#fff' : 'var(--color-text-muted)' }}>
-                    {v === 'dayGridMonth' ? t('calendar.monthView') : t('calendar.listView')}
-                  </button>
-                ))}
+              {/* Trash drop zone */}
+              <div
+                onDragOver={(e) => { e.preventDefault(); setDragOverTrash(true) }}
+                onDragLeave={() => setDragOverTrash(false)}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  setDragOverTrash(false)
+                  if (selected) deleteEvent(selected.id)
+                }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all"
+                style={{
+                  background: dragOverTrash ? 'rgba(239,68,68,0.2)' : 'var(--color-surface)',
+                  border: `1px solid ${dragOverTrash ? '#ef4444' : 'var(--color-border)'}`,
+                  color: dragOverTrash ? '#ef4444' : 'var(--color-text-muted)',
+                }}
+              >
+                <Trash2 size={14} />
+                <span className="hidden sm:inline">{t('calendar.dropToDelete')}</span>
               </div>
+
               {/* New event */}
               <button onClick={() => setShowNewModal(true)} className="flex items-center gap-2 px-4 py-1.5 rounded-xl text-sm font-semibold"
                 style={{ background: 'var(--color-accent)', color: '#fff' }}>
@@ -235,6 +277,8 @@ export default function CalendarPage() {
                   locale="es"
                   firstDay={1}
                   dayMaxEvents={3}
+                  editable
+                  eventDrop={handleEventDrop}
                   noEventsText={t('calendar.noEvents')}
                   datesSet={(arg) => setTitle(arg.view.title)}
                 />
@@ -322,6 +366,15 @@ export default function CalendarPage() {
                   </div>
                   <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{selected.date}</p>
                   {selected.note && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{selected.note}</p>}
+                  {selected.id.startsWith('act-') && (
+                    <button
+                      onClick={() => deleteEvent(selected.id)}
+                      className="flex items-center gap-1.5 text-xs font-semibold mt-1 px-3 py-1.5 rounded-lg transition-colors"
+                      style={{ background: 'rgba(239,68,68,0.12)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}
+                    >
+                      <Trash2 size={12} /> {t('calendar.delete')}
+                    </button>
+                  )}
                 </div>
               )}
             </div>

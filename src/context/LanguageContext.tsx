@@ -46,6 +46,8 @@ const translations: Record<Language, Record<string, string>> = {
     'calendar.formCompany':  'Empresa',
     'calendar.formDate':     'Fecha',
     'calendar.formTime':     'Hora',
+    'calendar.dropToDelete': 'Soltar para eliminar',
+    'calendar.delete':       'Eliminar evento',
 
     // Dashboard
     'dashboard.title':    'Executive Intelligence',
@@ -452,6 +454,8 @@ const translations: Record<Language, Record<string, string>> = {
     'calendar.formCompany':  'Company',
     'calendar.formDate':     'Date',
     'calendar.formTime':     'Time',
+    'calendar.dropToDelete': 'Drop to delete',
+    'calendar.delete':       'Delete event',
 
     // Dashboard
     'dashboard.title':    'Executive Intelligence',
