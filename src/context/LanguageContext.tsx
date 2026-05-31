@@ -19,8 +19,23 @@ const translations: Record<Language, Record<string, string>> = {
     // Nav labels
     'nav.dashboard':    'Dashboard',
     'nav.applications': 'Aplicaciones',
+    'nav.calendar':     'Calendario',
     'nav.documents':    'Documentos',
     'nav.settings':     'Configuración',
+
+    // Calendar
+    'calendar.title':        'Calendario',
+    'calendar.subtitle':     'Tus postulaciones y eventos en el tiempo',
+    'calendar.monthView':    'Mes',
+    'calendar.listView':     'Lista',
+    'calendar.today':        'Hoy',
+    'calendar.noEvents':     'Sin eventos este período',
+    'calendar.status':       'Estado',
+    'calendar.date':         'Fecha',
+    'calendar.type':         'Tipo',
+    'calendar.typeApp':      'Postulación',
+    'calendar.typeActivity': 'Actividad',
+    'calendar.viewOffer':    'Ver oferta',
 
     // Dashboard
     'dashboard.title':    'Executive Intelligence',
@@ -400,8 +415,23 @@ const translations: Record<Language, Record<string, string>> = {
     // Nav labels
     'nav.dashboard':    'Dashboard',
     'nav.applications': 'Applications',
+    'nav.calendar':     'Calendar',
     'nav.documents':    'Documents',
     'nav.settings':     'Settings',
+
+    // Calendar
+    'calendar.title':        'Calendar',
+    'calendar.subtitle':     'Your applications and events over time',
+    'calendar.monthView':    'Month',
+    'calendar.listView':     'List',
+    'calendar.today':        'Today',
+    'calendar.noEvents':     'No events this period',
+    'calendar.status':       'Status',
+    'calendar.date':         'Date',
+    'calendar.type':         'Type',
+    'calendar.typeApp':      'Application',
+    'calendar.typeActivity': 'Activity',
+    'calendar.viewOffer':    'View offer',
 
     // Dashboard
     'dashboard.title':    'Executive Intelligence',

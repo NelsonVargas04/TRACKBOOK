@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Briefcase, FileText, Settings } from 'lucide-react'
+import { LayoutDashboard, Briefcase, FileText, Settings, CalendarDays } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 import { BrandLogo } from '@/components/BrandLogo'
 import pkg from '../../../../package.json'
@@ -8,6 +8,7 @@ import pkg from '../../../../package.json'
 const links = [
   { icon: LayoutDashboard, labelKey: 'nav.dashboard',    to: '/dashboard' },
   { icon: Briefcase,       labelKey: 'nav.applications', to: '/applications' },
+  { icon: CalendarDays,    labelKey: 'nav.calendar',     to: '/calendar' },
   { icon: FileText,        labelKey: 'nav.documents',    to: '/cv' },
   { icon: Settings,        labelKey: 'nav.settings',     to: '/settings' },
 ]

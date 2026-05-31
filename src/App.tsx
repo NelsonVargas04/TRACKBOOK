@@ -15,6 +15,7 @@ import ApplicationsPage from '@/pages/Applications/ApplicationsPage'
 import CVPage from '@/pages/CV/CVPage'
 import CVDetailPage from '@/pages/CV/CVDetailPage'
 import SettingsPage from '@/pages/Settings/SettingsPage'
+import CalendarPage from '@/pages/Calendar/CalendarPage'
 
 // Must be inside BrowserRouter + AuthProvider to use hooks
 function InactivityGuard() {
@@ -50,6 +51,7 @@ export default function App() {
                 <Route path="/cv" element={<ProtectedRoute><CVPage /></ProtectedRoute>} />
                 <Route path="/cv/:cvCode" element={<ProtectedRoute><CVDetailPage /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
               </Routes>
             </BrowserRouter>
           </CoverLetterProvider>

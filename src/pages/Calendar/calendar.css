@@ -1,0 +1,127 @@
+/* FullCalendar dark-theme overrides */
+.fc {
+  --fc-border-color: var(--color-border);
+  --fc-button-bg-color: var(--color-bg);
+  --fc-button-border-color: var(--color-border);
+  --fc-button-hover-bg-color: var(--color-accent-light);
+  --fc-button-hover-border-color: var(--color-accent);
+  --fc-button-active-bg-color: var(--color-accent);
+  --fc-button-active-border-color: var(--color-accent);
+  --fc-button-text-color: var(--color-text-primary);
+  --fc-today-bg-color: var(--color-accent-light);
+  --fc-page-bg-color: var(--color-surface);
+  --fc-neutral-bg-color: var(--color-bg);
+  --fc-list-event-hover-bg-color: var(--color-accent-light);
+  font-family: 'Manrope', sans-serif;
+}
+
+.fc .fc-toolbar-title {
+  color: var(--color-text-primary);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.fc .fc-button {
+  border-radius: 8px !important;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 12px;
+  transition: all 0.15s ease;
+}
+
+.fc .fc-button:focus { box-shadow: none !important; }
+
+.fc .fc-col-header-cell-cushion {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.fc .fc-daygrid-day-number {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  color: var(--color-accent-text);
+  font-weight: 800;
+}
+
+.fc .fc-daygrid-day-frame {
+  padding: 2px;
+}
+
+.fc .fc-event {
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 1px 5px;
+  border: none !important;
+}
+
+.fc .fc-event:hover { opacity: 0.85; }
+
+.fc .fc-list-event:hover td { background: var(--color-accent-light) !important; }
+
+.fc .fc-list-day-cushion {
+  background: var(--color-bg) !important;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fc .fc-list-event-title a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.fc .fc-list-event-dot {
+  border-width: 6px;
+}
+
+.fc .fc-toolbar {
+  padding: 16px 20px 12px;
+}
+
+.fc .fc-scrollgrid {
+  border: none !important;
+}
+
+.fc .fc-scrollgrid-section > td {
+  border: none !important;
+}
+
+.fc-theme-standard td, .fc-theme-standard th {
+  border-color: var(--color-border) !important;
+}
+
+.fc .fc-daygrid-more-link {
+  color: var(--color-accent-text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.fc .fc-popover {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.fc .fc-popover-header {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px 10px 0 0;
+  padding: 8px 12px;
+}
