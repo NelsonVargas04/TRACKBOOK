@@ -60,6 +60,7 @@ export default function StatsCards() {
   const [active, setActive] = useState(0)
   const [offers, setOffers] = useState(0)
   const [interviewRate, setInterviewRate] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     getApplications().then((rows) => {
@@ -68,7 +69,7 @@ export default function StatsCards() {
       setOffers(rows.filter((r: any) => r.status === 'Oferta').length)
       const interviews = rows.filter((r: any) => r.status === 'Entrevista' || r.status === 'Oferta').length
       setInterviewRate(rows.length > 0 ? Math.round((interviews / rows.length) * 100) : 0)
-    }).catch(console.error)
+    }).catch(console.error).finally(() => setLoading(false))
   }, [])
 
   const cards = [
@@ -139,6 +140,24 @@ export default function StatsCards() {
       border: 'rgba(251,113,133,0.25)',
     },
   ]
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="rounded-2xl px-5 py-4 flex flex-col gap-3 animate-pulse"
+            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', minHeight: 156 }}>
+            <div className="flex items-center justify-between">
+              <div className="h-3 w-24 rounded-full" style={{ background: 'var(--color-bg)' }} />
+              <div className="w-8 h-8 rounded-xl" style={{ background: 'var(--color-bg)' }} />
+            </div>
+            <div className="h-10 w-16 rounded-full" style={{ background: 'var(--color-bg)' }} />
+            <div className="h-4 w-28 rounded-full" style={{ background: 'var(--color-bg)' }} />
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div className="grid grid-cols-3 gap-4">

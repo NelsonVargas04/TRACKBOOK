@@ -6,6 +6,7 @@ export default function ConversionFunnel() {
   const { t } = useLang()
   const [animated, setAnimated] = useState(false)
   const [counts, setCounts] = useState({ applied: 0, inProcess: 0, screening: 0, interview: 0, offer: 0, ghosted: 0 })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     getApplications().then((rows) => {
@@ -17,7 +18,7 @@ export default function ConversionFunnel() {
         offer:     rows.filter((r) => r.status === 'Oferta').length,
         ghosted:   rows.filter((r) => r.status === 'Ghosteado').length,
       })
-    }).catch(console.error)
+    }).catch(console.error).finally(() => setLoading(false))
     const t = setTimeout(() => setAnimated(true), 100)
     return () => clearTimeout(t)
   }, [])
@@ -32,6 +33,19 @@ export default function ConversionFunnel() {
   ]
 
   const max = stages[0].value || 1
+
+  if (loading) return (
+    <div className="rounded-xl p-6 flex flex-col gap-4 animate-pulse h-full"
+      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+      <div className="h-5 w-48 rounded-full" style={{ background: 'var(--color-bg)' }} />
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4">
+          <div className="h-3 w-20 rounded-full" style={{ background: 'var(--color-bg)' }} />
+          <div className="flex-1 h-7 rounded-full" style={{ background: 'var(--color-bg)', width: `${80 - i * 12}%` }} />
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <div

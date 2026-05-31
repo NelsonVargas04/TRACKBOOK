@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
-import { ResponsiveBar } from '@nivo/bar'
+import { useEffect, useState, useId } from 'react'
+import { ResponsiveLine } from '@nivo/line'
 import { getApplications } from '@/services/applications.service'
 import { useLang } from '@/context/LanguageContext'
 
-type MonthData = { month: string; count: number }
+type Point = { x: string; y: number }
 
 export default function TimelineChart() {
   const { t } = useLang()
-  const [data, setData] = useState<MonthData[]>([])
+  const gradientId = useId().replace(/:/g, '')
+  const [points, setPoints] = useState<Point[]>([])
   const [peak, setPeak] = useState(0)
 
   useEffect(() => {
@@ -20,27 +21,29 @@ export default function TimelineChart() {
       })
 
       const sorted = Object.entries(map).sort(([a], [b]) => a.localeCompare(b))
-      // Start from 2nd month, keep last 12
       const trimmed = sorted.length > 1 ? sorted.slice(1) : sorted
       const last12 = trimmed.slice(-12)
+
       const maxVal = last12.reduce((m, [, c]) => Math.max(m, c), 0)
       setPeak(maxVal)
 
-      setData(last12.map(([key, count]) => {
+      setPoints(last12.map(([key, count]) => {
         const [yr, mo] = key.split('-')
         const label = new Date(Number(yr), Number(mo) - 1)
           .toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-        return { month: label, count }
+        return { x: label, y: count }
       }))
     }).catch(console.error)
   }, [])
+
+  const data = [{ id: 'apps', data: points }]
 
   return (
     <div
       className="rounded-xl p-6"
       style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
-      <div className="flex items-start justify-between mb-5">
+      <div className="flex items-start justify-between mb-2">
         <div>
           <p className="font-bold text-lg" style={{ fontFamily: 'Manrope, sans-serif', color: 'var(--color-text-primary)' }}>
             {t('timeline.title')}
@@ -59,57 +62,105 @@ export default function TimelineChart() {
         )}
       </div>
 
-      {data.length === 0 ? (
+      {points.length === 0 ? (
         <div className="flex items-center justify-center h-36" style={{ color: 'var(--color-text-muted)' }}>
           <p className="text-sm">{t('timeline.empty')}</p>
         </div>
       ) : (
-        <div style={{ height: 160 }}>
-          <ResponsiveBar
+        <div style={{ height: 200 }}>
+          <ResponsiveLine
             data={data}
-            keys={['count']}
-            indexBy="month"
-            margin={{ top: 8, right: 8, bottom: 28, left: 0 }}
-            padding={0.35}
-            borderRadius={5}
-            colors={() => 'var(--color-accent)'}
-            colorBy="indexValue"
-            theme={{
-              axis: {
-                ticks: {
-                  text: { fill: 'var(--color-text-muted)', fontSize: 11 },
-                  line: { stroke: 'transparent' },
-                },
-                domain: { line: { stroke: 'transparent' } },
+            margin={{ top: 28, right: 40, bottom: 40, left: 30 }}
+            xScale={{ type: 'point' }}
+            yScale={{ type: 'linear', min: 0, max: peak + Math.ceil(peak * 0.15) || 10, stacked: false }}
+            curve="monotoneX"
+            enableArea
+            areaOpacity={0.18}
+            colors={['var(--color-accent)']}
+            lineWidth={2.5}
+            enablePoints
+            pointSize={8}
+            pointColor="var(--color-surface)"
+            pointBorderWidth={2.5}
+            pointBorderColor="var(--color-accent)"
+            enablePointLabel={false}
+            enableGridX={false}
+            enableGridY={false}
+            axisTop={null}
+            axisRight={null}
+            axisLeft={null}
+            axisBottom={{
+              tickSize: 0,
+              tickPadding: 10,
+              renderTick: ({ x, y, value }) => (
+                <g transform={`translate(${x},${y})`}>
+                  <text
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    style={{ fontSize: 11, fill: 'var(--color-text-muted)' }}
+                  >
+                    {value}
+                  </text>
+                </g>
+              ),
+            }}
+            defs={[
+              {
+                id: gradientId,
+                type: 'linearGradient',
+                colors: [
+                  { offset: 0, color: 'var(--color-accent)', opacity: 0.6 },
+                  { offset: 100, color: 'var(--color-accent)', opacity: 0 },
+                ],
+                gradientTransform: 'rotate(90)',
               },
-              grid: { line: { stroke: 'transparent' } },
+            ]}
+            fill={[{ match: '*', id: gradientId }]}
+            theme={{
+              text: { fontSize: 11, fill: 'var(--color-text-muted)' },
               tooltip: {
                 container: {
                   background: 'var(--color-surface)',
                   border: '1px solid var(--color-border)',
                   borderRadius: 8,
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                  color: 'var(--color-text-primary)',
                   fontSize: 12,
+                  color: 'var(--color-text-primary)',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
                 },
               },
             }}
-            axisBottom={{
-              tickSize: 0,
-              tickPadding: 8,
-            }}
-            axisLeft={null}
-            enableGridY={false}
-            enableLabel={false}
-            tooltip={({ id: _id, value, indexValue }) => (
-              <div style={{ padding: '8px 12px' }}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: 11 }}>{indexValue}</span>
+            tooltip={({ point }) => (
+              <div style={{ padding: '6px 12px' }}>
+                <span style={{ color: 'var(--color-text-muted)', fontSize: 11 }}>{String(point.data.x)}</span>
                 <br />
-                <span style={{ color: 'var(--color-accent-text)', fontWeight: 800, fontSize: 16 }}>
-                  {value} <span style={{ fontWeight: 400, fontSize: 11 }}>{t('timeline.apps')}</span>
+                <span style={{ color: 'var(--color-accent-text)', fontWeight: 800, fontSize: 15 }}>
+                  {String(point.data.y)} <span style={{ fontWeight: 400, fontSize: 11 }}>{t('timeline.apps')}</span>
                 </span>
               </div>
             )}
+            animate
+            motionConfig="gentle"
+            layers={[
+              'grid', 'axes', 'areas', 'crosshair', 'lines', 'points', 'slices', 'mesh',
+              ({ points: pts, innerHeight }) => (
+                <g>
+                  {pts.map((pt) => {
+                    const isLow = pt.y > innerHeight * 0.75
+                    return (
+                      <text
+                        key={pt.id}
+                        x={pt.x}
+                        y={isLow ? pt.y - 18 : pt.y - 14}
+                        textAnchor="middle"
+                        style={{ fontSize: 11, fontWeight: 700, fill: 'var(--color-text-primary)' }}
+                      >
+                        {String(pt.data.y)}
+                      </text>
+                    )
+                  })}
+                </g>
+              ),
+            ]}
           />
         </div>
       )}
