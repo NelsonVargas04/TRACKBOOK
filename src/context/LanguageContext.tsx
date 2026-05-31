@@ -36,6 +36,16 @@ const translations: Record<Language, Record<string, string>> = {
     'calendar.typeApp':      'Postulación',
     'calendar.typeActivity': 'Actividad',
     'calendar.viewOffer':    'Ver oferta',
+    'calendar.newEvent':     '+ Nuevo evento',
+    'calendar.upcoming':     'Próximos eventos',
+    'calendar.upcomingFrom': 'A partir de hoy,',
+    'calendar.types':        'Tipos de evento',
+    'calendar.typesDesc':    'Colores en el calendario',
+    'calendar.save':         'Guardar',
+    'calendar.formTitle':    'Título',
+    'calendar.formCompany':  'Empresa',
+    'calendar.formDate':     'Fecha',
+    'calendar.formTime':     'Hora',
 
     // Dashboard
     'dashboard.title':    'Executive Intelligence',
@@ -432,6 +442,16 @@ const translations: Record<Language, Record<string, string>> = {
     'calendar.typeApp':      'Application',
     'calendar.typeActivity': 'Activity',
     'calendar.viewOffer':    'View offer',
+    'calendar.newEvent':     '+ New event',
+    'calendar.upcoming':     'Upcoming events',
+    'calendar.upcomingFrom': 'From today,',
+    'calendar.types':        'Event types',
+    'calendar.typesDesc':    'Colors in the calendar',
+    'calendar.save':         'Save',
+    'calendar.formTitle':    'Title',
+    'calendar.formCompany':  'Company',
+    'calendar.formDate':     'Date',
+    'calendar.formTime':     'Time',
 
     // Dashboard
     'dashboard.title':    'Executive Intelligence',
