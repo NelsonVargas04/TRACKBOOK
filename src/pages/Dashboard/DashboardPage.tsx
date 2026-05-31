@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
           <div className="flex flex-col gap-6">
             <StatsCards />
-            <div className="grid gap-4" style={{ gridTemplateColumns: '1fr 320px', alignItems: 'stretch' }}>
+            <div className="grid gap-4" style={{ gridTemplateColumns: '2fr 1fr', alignItems: 'stretch' }}>
               <ConversionFunnel />
               <SourcesChart />
             </div>
