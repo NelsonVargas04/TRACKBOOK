@@ -94,7 +94,7 @@ export function ImportModal({ onClose, onDone }: Props) {
           opacity: visible ? 1 : 0,
           transform: visible ? 'scale(1) translateY(0)' : 'scale(0.92) translateY(24px)',
           transition: 'opacity 0.3s cubic-bezier(0.16,1,0.3,1), transform 0.3s cubic-bezier(0.16,1,0.3,1)',
-          width: rows ? 820 : 520,
+          width: rows ? 860 : 520,
           maxWidth: '95vw',
           maxHeight: '90vh',
           display: 'flex',
@@ -215,26 +215,46 @@ export function ImportModal({ onClose, onDone }: Props) {
             {/* PREVIEW */}
             {imported === null && rows && !importing && (
               <>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                    <span style={{ color: 'var(--color-accent-text)' }}>{rows.length}</span> {t('import.readyCount')}
-                  </p>
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)' }}
+                    >
+                      <CheckCircle size={18} style={{ color: '#22c55e' }} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-base font-bold leading-tight" style={{ fontFamily: 'Manrope, sans-serif', color: 'var(--color-text-primary)' }}>
+                        <span style={{ color: 'var(--color-accent-text)' }}>{rows.length}</span> {t('import.readyCount')}
+                      </p>
+                      <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--color-text-muted)' }}>
+                        {t('import.previewHint')}
+                      </p>
+                    </div>
+                  </div>
                   <button
                     onClick={() => { setRows(null); setParseError(null) }}
-                    className="text-xs px-3 py-1.5 rounded-lg"
-                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}
+                    className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-lg shrink-0 transition-colors hover:brightness-110"
+                    style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}
                   >
+                    <Upload size={13} />
                     {t('import.changeFile')}
                   </button>
                 </div>
 
                 <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
-                  <div className="overflow-x-auto" style={{ maxHeight: 340 }}>
-                    <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+                  <div style={{ maxHeight: 360, overflow: 'auto' }}>
+                    <table className="text-sm" style={{ borderCollapse: 'collapse', tableLayout: 'fixed', width: '100%', minWidth: 560 }}>
+                      <colgroup>
+                        <col style={{ width: '46%' }} />
+                        <col style={{ width: '16%' }} />
+                        <col style={{ width: '20%' }} />
+                        <col style={{ width: '18%' }} />
+                      </colgroup>
                       <thead style={{ position: 'sticky', top: 0, background: 'var(--color-bg)', zIndex: 1 }}>
                         <tr>
-                          {['Empresa', 'Puesto', 'Fuente', 'Estado', 'Fecha'].map(h => (
-                            <th key={h} className="text-left px-4 py-3 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
+                          {['Empresa / Puesto', 'Fuente', 'Estado', 'Fecha'].map(h => (
+                            <th key={h} className="text-left px-4 py-3 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)', whiteSpace: 'nowrap' }}>
                               {h}
                             </th>
                           ))}
@@ -248,18 +268,18 @@ export function ImportModal({ onClose, onDone }: Props) {
                               onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
                               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                             >
-                              <td className="px-4 py-2.5 font-semibold" style={{ color: 'var(--color-text-primary)', whiteSpace: 'nowrap' }}>{row.company}</td>
-                              <td className="px-4 py-2.5" style={{ color: 'var(--color-text-secondary)', maxWidth: 200 }}>
-                                <span className="block truncate">{row.role}</span>
-                              </td>
-                              <td className="px-4 py-2.5 text-xs" style={{ color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{row.source}</td>
                               <td className="px-4 py-2.5">
-                                <span className="px-2 py-1 rounded-md text-xs font-semibold" style={{ background: sc.bg, color: sc.color }}>
+                                <p className="font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{row.company}</p>
+                                <p className="text-xs truncate mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{row.role}</p>
+                              </td>
+                              <td className="px-4 py-2.5 text-xs truncate" style={{ color: 'var(--color-text-muted)' }}>{row.source}</td>
+                              <td className="px-4 py-2.5">
+                                <span className="inline-block px-2 py-1 rounded-md text-xs font-semibold" style={{ background: sc.bg, color: sc.color }}>
                                   {row.status}
                                 </span>
                               </td>
                               <td className="px-4 py-2.5 text-xs" style={{ color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
-                                {new Date(row.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: '2-digit' })}
+                                {new Date(row.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
                               </td>
                             </tr>
                           )
