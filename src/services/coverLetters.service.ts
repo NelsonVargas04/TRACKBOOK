@@ -54,6 +54,7 @@ export async function setPrimaryCoverLetter(id: number) {
     .from('cover_letters')
     .update({ is_primary: true })
     .eq('id', id)
+    .eq('user_id', user.id)
     .select()
     .single()
   if (error) throw error

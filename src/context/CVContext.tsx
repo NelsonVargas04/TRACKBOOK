@@ -28,8 +28,13 @@ const CVContext = createContext<CVContextValue>({
   reload: async () => {},
 })
 
-function genCode(n: number) {
-  return `CV-${String(n).padStart(6, '0')}`
+// Next code = max existing numeric suffix + 1 (robusto ante borrados/altas)
+function genCode(existing: CV[]) {
+  const max = existing.reduce((m, cv) => {
+    const n = parseInt(cv.cvCode.replace(/\D/g, ''), 10)
+    return Number.isNaN(n) ? m : Math.max(m, n)
+  }, 0)
+  return `CV-${String(max + 1).padStart(6, '0')}`
 }
 
 function rowToCV(row: any): CV {

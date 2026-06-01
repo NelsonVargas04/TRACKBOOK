@@ -18,9 +18,13 @@ type AppRow = {
 }
 
 async function fetchAllData() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No autenticado')
+
   const { data, error } = await supabase
     .from('applications')
     .select('id, role, company, status, type, stars, salary, note, contact, source, url, tag, created_at, updated_at')
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
   if (error) throw error
   return (data ?? []) as AppRow[]

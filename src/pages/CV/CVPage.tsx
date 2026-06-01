@@ -57,8 +57,7 @@ export default function CVPage() {
       const sizeKB = Math.round(file.size / 1024)
       const size = sizeKB > 1024 ? `${(sizeKB / 1024).toFixed(1)} MB` : `${sizeKB} KB`
       const name = file.name.replace(/\.pdf$/i, '')
-      const totalAfter = cvs.length + 1
-      const cv_code = genCode(totalAfter)
+      const cv_code = genCode(cvs)
       const row = await createCV({ cv_code, name, size, is_primary: markAsPrimary }, file)
       if (markAsPrimary) {
         await setPrimaryCV(row.id)
@@ -124,8 +123,7 @@ export default function CVPage() {
         await updateCoverLetter(editingCL.id, { name, content, preview })
         if (markAsPrimary) await setPrimaryCoverLetter(editingCL.id)
       } else {
-        const totalAfter = coverLetters.length + 1
-        const row = await createCoverLetter({ cl_code: genCLCode(totalAfter), name, content, preview, is_primary: markAsPrimary })
+        const row = await createCoverLetter({ cl_code: genCLCode(coverLetters), name, content, preview, is_primary: markAsPrimary })
         if (markAsPrimary) await setPrimaryCoverLetter(row.id)
       }
       await reloadCLs()

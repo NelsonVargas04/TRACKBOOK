@@ -48,6 +48,7 @@ export async function setPrimaryCV(id: number) {
     .from('cvs')
     .update({ is_primary: true })
     .eq('id', id)
+    .eq('user_id', user.id)
     .select()
     .single()
   if (error) throw error

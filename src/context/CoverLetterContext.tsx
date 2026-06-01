@@ -28,8 +28,13 @@ const CoverLetterContext = createContext<CoverLetterContextValue>({
   reload: async () => {},
 })
 
-function genCLCode(n: number) {
-  return `CL-${String(n).padStart(6, '0')}`
+// Next code = max existing numeric suffix + 1 (robusto ante borrados/altas)
+function genCLCode(existing: CoverLetter[]) {
+  const max = existing.reduce((m, cl) => {
+    const n = parseInt(cl.clCode.replace(/\D/g, ''), 10)
+    return Number.isNaN(n) ? m : Math.max(m, n)
+  }, 0)
+  return `CL-${String(max + 1).padStart(6, '0')}`
 }
 
 function rowToCL(row: any): CoverLetter {
