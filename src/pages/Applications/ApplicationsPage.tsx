@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { LayoutGrid, List, Plus, Search, X, Star, ChevronDown } from 'lucide-react'
 import Sidebar from '@/pages/Dashboard/components/Sidebar'
 import Header from '@/pages/Dashboard/components/Header'
@@ -11,7 +11,8 @@ import { UndoToast } from '@/components/ui/UndoToast'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { useClickOutside } from '@/hooks/useClickOutside'
-import { getApplications, createApplication, updateApplication, deleteApplication } from '@/services/applications.service'
+import { createApplication, updateApplication, deleteApplication, type AppWithActivity } from '@/services/applications.service'
+import { useApplications } from '@/context/ApplicationsContext'
 import { useLang } from '@/context/LanguageContext'
 import type { Application, Status } from '@/data/mockApplications'
 
@@ -49,10 +50,10 @@ function dbRowToApp(row: any): Application {
 
 export default function ApplicationsPage() {
   const { t } = useLang()
+  const { rows, loading, setRows } = useApplications()
+  const apps = useMemo(() => rows.map(dbRowToApp), [rows])
   const [view, setView] = useState<'list' | 'board'>('list')
   const [showModal, setShowModal] = useState(false)
-  const [apps, setApps] = useState<Application[]>([])
-  const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [selected, setSelected] = useState<Application | null>(null)
@@ -89,12 +90,9 @@ export default function ApplicationsPage() {
     setMinStars(0)
   }
 
-  useEffect(() => {
-    getApplications()
-      .then((rows) => setApps(rows.map(dbRowToApp)))
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+  function patchRow(id: number, partial: Partial<AppWithActivity>) {
+    setRows((prev) => prev.map((r) => r.id === id ? { ...r, ...partial } : r))
+  }
 
   async function handleAdd(app: Application) {
     setSaving(true)
@@ -115,7 +113,7 @@ export default function ApplicationsPage() {
         cover_letter_id: null,
         updated_at: null,
       })
-      setApps((prev) => [dbRowToApp(row), ...prev])
+      setRows((prev) => [{ ...(row as AppWithActivity), activity_entries: [] }, ...prev])
       setShowSuccess(true)
     } catch (e) {
       console.error(e)
@@ -125,12 +123,25 @@ export default function ApplicationsPage() {
   }
 
   async function handleUpdate(updated: Application) {
-    const previous = apps.find((a) => a.id === updated.id)
-    setApps((prev) => prev.map((a) => a.id === updated.id ? updated : a))
+    const previous = rows.find((r) => r.id === updated.id)
+    // Optimistic — patch the editable scalar fields onto the raw row
+    patchRow(updated.id, {
+      role: updated.role,
+      company: updated.company,
+      status: updated.status,
+      stars: updated.stars,
+      type: updated.type,
+      salary: updated.salary ?? null,
+      note: updated.note ?? null,
+      contact: updated.contact ?? null,
+      tag: updated.tag ?? null,
+      url: updated.url ?? null,
+      source: updated.source ?? null,
+    })
     setSelected(null)
 
     try {
-      await updateApplication(updated.id, {
+      const row = await updateApplication(updated.id, {
         role: updated.role,
         company: updated.company,
         status: updated.status,
@@ -143,32 +154,31 @@ export default function ApplicationsPage() {
         url: updated.url ?? null,
         source: updated.source ?? null,
       })
+      patchRow(updated.id, row) // reconcile (picks up updated_at)
     } catch (e) {
       console.error(e)
-      if (previous) {
-        setApps((prev) => prev.map((a) => a.id === updated.id ? previous : a))
-      }
+      if (previous) patchRow(updated.id, previous)
     }
   }
 
   async function handleStatusChange(app: Application, newStatus: Application['status']) {
-    const previous = app
-    const now = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
-    const optimistic = { ...app, status: newStatus, updatedAt: now }
-    setApps((prev) => prev.map((a) => a.id === app.id ? optimistic : a))
+    const previous = rows.find((r) => r.id === app.id)
+    patchRow(app.id, { status: newStatus, updated_at: new Date().toISOString() })
 
     try {
       await updateApplication(app.id, { status: newStatus })
     } catch (e) {
       console.error(e)
-      setApps((prev) => prev.map((a) => a.id === app.id ? previous : a))
+      if (previous) patchRow(app.id, previous)
     }
   }
 
   async function confirmDeleteApp(app: Application) {
-    // Optimistic removal — keep index so undo restores position
-    const index = apps.findIndex((a) => a.id === app.id)
-    setApps((prev) => prev.filter((a) => a.id !== app.id))
+    // Optimistic removal — keep the raw row + index so undo restores position
+    const index = rows.findIndex((r) => r.id === app.id)
+    const removed = rows[index]
+    if (!removed) return
+    setRows((prev) => prev.filter((r) => r.id !== app.id))
 
     let undone = false
     const id = toastId.current++
@@ -179,10 +189,10 @@ export default function ApplicationsPage() {
         message: `${t('apps.toastDeleted')} — ${app.company}`,
         onUndo: () => {
           undone = true
-          setApps((prev) => {
-            if (prev.find((a) => a.id === app.id)) return prev
+          setRows((prev) => {
+            if (prev.find((r) => r.id === app.id)) return prev
             const next = [...prev]
-            next.splice(index < 0 ? next.length : index, 0, app)
+            next.splice(index < 0 ? next.length : index, 0, removed)
             return next
           })
         },

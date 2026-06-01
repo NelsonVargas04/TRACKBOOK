@@ -1,26 +1,24 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLang } from '@/context/LanguageContext'
-import { getApplications } from '@/services/applications.service'
+import { useApplications } from '@/context/ApplicationsContext'
 
 export default function ConversionFunnel() {
   const { t } = useLang()
+  const { rows, loading } = useApplications()
   const [animated, setAnimated] = useState(false)
-  const [counts, setCounts] = useState({ applied: 0, inProcess: 0, screening: 0, interview: 0, offer: 0, ghosted: 0 })
-  const [loading, setLoading] = useState(true)
+
+  const counts = useMemo(() => ({
+    applied:   rows.length,
+    inProcess: rows.filter((r) => r.status === 'En Proceso').length,
+    screening: rows.filter((r) => ['Screening', 'Entrevista', 'Oferta'].includes(r.status)).length,
+    interview: rows.filter((r) => ['Entrevista', 'Oferta'].includes(r.status)).length,
+    offer:     rows.filter((r) => r.status === 'Oferta').length,
+    ghosted:   rows.filter((r) => r.status === 'Ghosteado').length,
+  }), [rows])
 
   useEffect(() => {
-    getApplications().then((rows) => {
-      setCounts({
-        applied:   rows.length,
-        inProcess: rows.filter((r) => r.status === 'En Proceso').length,
-        screening: rows.filter((r) => ['Screening', 'Entrevista', 'Oferta'].includes(r.status)).length,
-        interview: rows.filter((r) => ['Entrevista', 'Oferta'].includes(r.status)).length,
-        offer:     rows.filter((r) => r.status === 'Oferta').length,
-        ghosted:   rows.filter((r) => r.status === 'Ghosteado').length,
-      })
-    }).catch(console.error).finally(() => setLoading(false))
-    const t = setTimeout(() => setAnimated(true), 100)
-    return () => clearTimeout(t)
+    const id = setTimeout(() => setAnimated(true), 100)
+    return () => clearTimeout(id)
   }, [])
 
   const stages = [

@@ -1,41 +1,36 @@
-import { useEffect, useState, useId } from 'react'
+import { useMemo, useId } from 'react'
 import { ResponsiveLine } from '@nivo/line'
-import { getApplications } from '@/services/applications.service'
+import { useApplications } from '@/context/ApplicationsContext'
 import { useLang } from '@/context/LanguageContext'
 
 type Point = { x: string; y: number }
 
 export default function TimelineChart() {
   const { t } = useLang()
+  const { rows, loading } = useApplications()
   const gradientId = useId().replace(/:/g, '')
-  const [points, setPoints] = useState<Point[]>([])
-  const [peak, setPeak] = useState(0)
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    getApplications().then((rows) => {
-      const map: Record<string, number> = {}
-      rows.forEach((r) => {
-        const d = new Date(r.created_at)
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-        map[key] = (map[key] ?? 0) + 1
-      })
+  const { points, peak } = useMemo(() => {
+    const map: Record<string, number> = {}
+    rows.forEach((r) => {
+      const d = new Date(r.created_at)
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+      map[key] = (map[key] ?? 0) + 1
+    })
 
-      const sorted = Object.entries(map).sort(([a], [b]) => a.localeCompare(b))
-      const trimmed = sorted.length > 1 ? sorted.slice(1) : sorted
-      const last12 = trimmed.slice(-12)
+    const sorted = Object.entries(map).sort(([a], [b]) => a.localeCompare(b))
+    const trimmed = sorted.length > 1 ? sorted.slice(1) : sorted
+    const last12 = trimmed.slice(-12)
 
-      const maxVal = last12.reduce((m, [, c]) => Math.max(m, c), 0)
-      setPeak(maxVal)
-
-      setPoints(last12.map(([key, count]) => {
-        const [yr, mo] = key.split('-')
-        const label = new Date(Number(yr), Number(mo) - 1)
-          .toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
-        return { x: label, y: count }
-      }))
-    }).catch(console.error).finally(() => setLoading(false))
-  }, [])
+    const peak = last12.reduce((m, [, c]) => Math.max(m, c), 0)
+    const points: Point[] = last12.map(([key, count]) => {
+      const [yr, mo] = key.split('-')
+      const label = new Date(Number(yr), Number(mo) - 1)
+        .toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
+      return { x: label, y: count }
+    })
+    return { points, peak }
+  }, [rows])
 
   const data = [{ id: 'apps', data: points }]
 

@@ -4,7 +4,7 @@ import type { Database, Status } from '@/lib/database.types'
 type AppRow    = Database['public']['Tables']['applications']['Row']
 type AppInsert = Database['public']['Tables']['applications']['Insert']
 
-type AppWithActivity = AppRow & { activity_entries: Database['public']['Tables']['activity_entries']['Row'][] }
+export type AppWithActivity = AppRow & { activity_entries: Database['public']['Tables']['activity_entries']['Row'][] }
 
 export async function getApplications(): Promise<AppWithActivity[]> {
   const { data: { user } } = await supabase.auth.getUser()

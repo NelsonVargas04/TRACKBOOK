@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { ResponsivePie } from '@nivo/pie'
-import { getApplications } from '@/services/applications.service'
+import { useApplications } from '@/context/ApplicationsContext'
 import { useLang } from '@/context/LanguageContext'
 import { SourceLogo } from '@/components/ui/SourceIcons'
 
@@ -13,32 +13,27 @@ const PALETTE = [
 
 export default function SourcesChart() {
   const { t } = useLang()
-  const [rows, setRows] = useState<SourceRow[]>([])
-  const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const { rows: apps, loading } = useApplications()
+  const total = apps.length
 
-  useEffect(() => {
-    getApplications().then((apps) => {
-      const map: Record<string, number> = {}
-      apps.forEach((a) => {
-        const s = a.source ?? 'Otro'
-        map[s] = (map[s] ?? 0) + 1
-      })
-      const t = apps.length || 1
-      setTotal(apps.length)
-      const sorted = Object.entries(map)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 8)
-        .map(([source, count], i) => ({
-          id: source,
-          label: source,
-          value: count,
-          pct: Math.round((count / t) * 100),
-          color: PALETTE[i % PALETTE.length],
-        }))
-      setRows(sorted)
-    }).catch(console.error).finally(() => setLoading(false))
-  }, [])
+  const rows = useMemo<SourceRow[]>(() => {
+    const map: Record<string, number> = {}
+    apps.forEach((a) => {
+      const s = a.source ?? 'Otro'
+      map[s] = (map[s] ?? 0) + 1
+    })
+    const denom = apps.length || 1
+    return Object.entries(map)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 8)
+      .map(([source, count], i) => ({
+        id: source,
+        label: source,
+        value: count,
+        pct: Math.round((count / denom) * 100),
+        color: PALETTE[i % PALETTE.length],
+      }))
+  }, [apps])
 
   if (loading) {
     return (

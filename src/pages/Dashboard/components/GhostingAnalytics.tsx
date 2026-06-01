@@ -1,46 +1,41 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Ghost } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
-import { getApplications } from '@/services/applications.service'
+import { useApplications } from '@/context/ApplicationsContext'
+
+const BAR_CONFIG = [
+  { labelKey: 'ghosting.fast', subKey: 'ghosting.fastSub', color: '#22c55e', bg: 'rgba(34,197,94,0.1)',   border: 'rgba(34,197,94,0.2)'   },
+  { labelKey: 'ghosting.late', subKey: 'ghosting.lateSub', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  border: 'rgba(245,158,11,0.2)'  },
+  { labelKey: 'ghosting.none', subKey: 'ghosting.noneSub', color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.2)'   },
+]
 
 export default function GhostingAnalytics() {
   const { t } = useLang()
+  const { rows } = useApplications()
   const [animated, setAnimated] = useState(false)
-  const [bars, setBars] = useState([
-    { labelKey: 'ghosting.fast', subKey: 'ghosting.fastSub', pct: 0, color: '#22c55e', bg: 'rgba(34,197,94,0.1)',   border: 'rgba(34,197,94,0.2)'   },
-    { labelKey: 'ghosting.late', subKey: 'ghosting.lateSub', pct: 0, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  border: 'rgba(245,158,11,0.2)'  },
-    { labelKey: 'ghosting.none', subKey: 'ghosting.noneSub', pct: 0, color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.2)'   },
-  ])
+
+  const bars = useMemo(() => {
+    const total = rows.length
+    let fast = 0, late = 0, none = 0
+    rows.forEach((r) => {
+      const created = new Date(r.created_at).getTime()
+      const updated = r.updated_at ? new Date(r.updated_at).getTime() : null
+      const diffWeeks = updated ? (updated - created) / (7 * 86400000) : null
+
+      if (diffWeeks === null) none++
+      else if (diffWeeks < 1) fast++
+      else if (diffWeeks <= 3) late++
+      else none++
+    })
+    const pct = (n: number) => (total === 0 ? 0 : Math.round((n / total) * 100))
+    return [
+      { ...BAR_CONFIG[0], pct: pct(fast) },
+      { ...BAR_CONFIG[1], pct: pct(late) },
+      { ...BAR_CONFIG[2], pct: pct(none) },
+    ]
+  }, [rows])
 
   useEffect(() => {
-    getApplications().then((rows) => {
-      const total = rows.length
-      if (total === 0) return
-
-      let fast = 0, late = 0, none = 0
-      rows.forEach((r) => {
-        const created = new Date(r.created_at).getTime()
-        const updated = r.updated_at ? new Date(r.updated_at).getTime() : null
-        const diffWeeks = updated ? (updated - created) / (7 * 86400000) : null
-
-        if (diffWeeks === null) {
-          none++
-        } else if (diffWeeks < 1) {
-          fast++
-        } else if (diffWeeks <= 3) {
-          late++
-        } else {
-          none++
-        }
-      })
-
-      setBars((prev) => [
-        { ...prev[0], pct: Math.round((fast / total) * 100) },
-        { ...prev[1], pct: Math.round((late / total) * 100) },
-        { ...prev[2], pct: Math.round((none / total) * 100) },
-      ])
-    }).catch(console.error)
-
     const timer = setTimeout(() => setAnimated(true), 100)
     return () => clearTimeout(timer)
   }, [])

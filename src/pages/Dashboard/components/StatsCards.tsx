@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { Briefcase, MessageSquare, Star, FileText, ScrollText, TrendingUp } from 'lucide-react'
 import { useCountUp } from '@/hooks/useCountUp'
 import { useCV } from '@/context/CVContext'
 import { useCoverLetter } from '@/context/CoverLetterContext'
-import { getApplications } from '@/services/applications.service'
+import { useApplications } from '@/context/ApplicationsContext'
 import { useLang } from '@/context/LanguageContext'
 
 function StatCard({
@@ -56,21 +56,16 @@ export default function StatsCards() {
   const { t } = useLang()
   const { cvs } = useCV()
   const { coverLetters } = useCoverLetter()
-  const [total, setTotal] = useState(0)
-  const [active, setActive] = useState(0)
-  const [offers, setOffers] = useState(0)
-  const [interviewRate, setInterviewRate] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const { rows, loading } = useApplications()
 
-  useEffect(() => {
-    getApplications().then((rows) => {
-      setTotal(rows.length)
-      setActive(rows.filter((r: any) => r.status !== 'Rechazada').length)
-      setOffers(rows.filter((r: any) => r.status === 'Oferta').length)
-      const interviews = rows.filter((r: any) => r.status === 'Entrevista' || r.status === 'Oferta').length
-      setInterviewRate(rows.length > 0 ? Math.round((interviews / rows.length) * 100) : 0)
-    }).catch(console.error).finally(() => setLoading(false))
-  }, [])
+  const { total, active, offers, interviewRate } = useMemo(() => {
+    const total = rows.length
+    const active = rows.filter((r) => r.status !== 'Rechazada').length
+    const offers = rows.filter((r) => r.status === 'Oferta').length
+    const interviews = rows.filter((r) => r.status === 'Entrevista' || r.status === 'Oferta').length
+    const interviewRate = total > 0 ? Math.round((interviews / total) * 100) : 0
+    return { total, active, offers, interviewRate }
+  }, [rows])
 
   const cards = [
     {

@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/context/ThemeContext'
 import { LanguageProvider } from '@/context/LanguageContext'
 import { CVProvider } from '@/context/CVContext'
 import { CoverLetterProvider } from '@/context/CoverLetterContext'
+import { ApplicationsProvider } from '@/context/ApplicationsContext'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useInactivityLogout } from '@/hooks/useInactivityLogout'
@@ -36,6 +37,7 @@ export default function App() {
     <ThemeProvider>
       <LanguageProvider>
       <AuthProvider>
+        <ApplicationsProvider>
         <CVProvider>
           <CoverLetterProvider>
             <BrowserRouter>
@@ -56,6 +58,7 @@ export default function App() {
             </BrowserRouter>
           </CoverLetterProvider>
         </CVProvider>
+        </ApplicationsProvider>
       </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
