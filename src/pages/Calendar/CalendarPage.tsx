@@ -146,7 +146,9 @@ export default function CalendarPage() {
   async function deleteEvent(id: string) {
     if (id.startsWith('act-')) {
       const numId = Number(id.replace('act-', ''))
-      await supabase.from('activity_entries').delete().eq('id', numId)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      await supabase.from('activity_entries').delete().eq('id', numId).eq('user_id', user.id)
     }
     await loadEvents()
     setSelected(null)
