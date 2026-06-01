@@ -1,21 +1,43 @@
 import { useState, useRef } from 'react'
-import { FileText, Star, ChevronDown, Check, Lock, FolderOpen } from 'lucide-react'
+import { FileText, Star, ChevronDown, Check, Lock, Plus } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { SectionTitle } from '@/components/ui/SectionTitle'
-import { useCoverLetter } from '@/context/CoverLetterContext'
+import { useCoverLetter, genCLCode } from '@/context/CoverLetterContext'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useLang } from '@/context/LanguageContext'
+import { CoverLetterModal } from '@/pages/CV/components/CoverLetterModal'
+import { createCoverLetter, setPrimaryCoverLetter } from '@/services/coverLetters.service'
 
 export function CoverLetterPrincipalCard() {
   const { t } = useLang()
-  const { coverLetters, primaryCLId, setPrimaryCLId } = useCoverLetter()
+  const { coverLetters, primaryCLId, setPrimaryCLId, reload } = useCoverLetter()
   const [open, setOpen] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [saving, setSaving] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const primary = coverLetters.find((c) => c.id === primaryCLId)
   const onlyOne = coverLetters.length === 1
   const empty = coverLetters.length === 0
 
   useClickOutside(ref, () => setOpen(false))
+
+  async function addCL(name: string, content: string, markAsPrimary: boolean) {
+    setSaving(true)
+    try {
+      const preview = content.slice(0, 120) + (content.length > 120 ? '…' : '')
+      const row = await createCoverLetter({ cl_code: genCLCode(coverLetters), name, content, preview, is_primary: markAsPrimary })
+      if (markAsPrimary) {
+        await setPrimaryCoverLetter(row.id)
+        setPrimaryCLId(row.id)
+      }
+      await reload()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setSaving(false)
+      setShowModal(false)
+    }
+  }
 
   return (
     <Card>
@@ -24,15 +46,21 @@ export function CoverLetterPrincipalCard() {
         {t('clCard.desc')}
       </p>
 
-      {/* Empty state */}
+      {/* Empty state — clickable to create */}
       {empty && (
-        <div
-          className="flex flex-col items-center justify-center gap-2 py-8 rounded-xl"
+        <button
+          onClick={() => setShowModal(true)}
+          className="w-full flex flex-col items-center justify-center gap-2 py-8 rounded-xl transition-colors hover:brightness-110"
           style={{ background: 'var(--color-bg)', border: '1px dashed var(--color-border)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--color-accent)')}
+          onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--color-border)')}
         >
-          <FolderOpen size={22} style={{ color: 'var(--color-text-muted)', opacity: 0.5 }} />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--color-accent-light)', border: '1px solid var(--color-accent-border)' }}>
+            <Plus size={18} style={{ color: 'var(--color-accent-text)' }} />
+          </div>
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t('clCard.empty')}</p>
-        </div>
+          <p className="text-sm font-semibold" style={{ color: 'var(--color-accent-text)' }}>{t('clCard.addCta')}</p>
+        </button>
       )}
 
       {/* Single item — locked, no dropdown */}
@@ -147,6 +175,15 @@ export function CoverLetterPrincipalCard() {
             {primary.preview}
           </p>
         </div>
+      )}
+
+      {showModal && (
+        <CoverLetterModal
+          onClose={() => { if (!saving) setShowModal(false) }}
+          onSave={addCL}
+          primaryCLId={primaryCLId}
+          loading={saving}
+        />
       )}
     </Card>
   )

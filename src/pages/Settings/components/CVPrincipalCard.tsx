@@ -1,21 +1,44 @@
 import { useState, useRef } from 'react'
-import { FileText, Star, ChevronDown, Check, Lock, FolderOpen } from 'lucide-react'
+import { FileText, Star, ChevronDown, Check, Lock, Plus } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { SectionTitle } from '@/components/ui/SectionTitle'
-import { useCV } from '@/context/CVContext'
+import { useCV, genCode } from '@/context/CVContext'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useLang } from '@/context/LanguageContext'
+import { UploadModal } from '@/pages/CV/components/UploadModal'
+import { createCV, setPrimaryCV } from '@/services/cvs.service'
 
 export function CVPrincipalCard() {
   const { t } = useLang()
-  const { cvs, primaryId, setPrimaryId } = useCV()
+  const { cvs, primaryId, setPrimaryId, reload } = useCV()
   const [open, setOpen] = useState(false)
+  const [showUpload, setShowUpload] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const primary = cvs.find((c) => c.id === primaryId)
   const onlyOne = cvs.length === 1
   const empty = cvs.length === 0
 
   useClickOutside(ref, () => setOpen(false))
+
+  async function addCV(file: File, markAsPrimary: boolean) {
+    setUploading(true)
+    try {
+      const sizeKB = Math.round(file.size / 1024)
+      const size = sizeKB > 1024 ? `${(sizeKB / 1024).toFixed(1)} MB` : `${sizeKB} KB`
+      const name = file.name.replace(/\.pdf$/i, '')
+      const row = await createCV({ cv_code: genCode(cvs), name, size, is_primary: markAsPrimary }, file)
+      if (markAsPrimary) {
+        await setPrimaryCV(row.id)
+        setPrimaryId(row.id)
+      }
+      await reload()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setUploading(false)
+    }
+  }
 
   return (
     <Card>
@@ -24,15 +47,21 @@ export function CVPrincipalCard() {
         {t('cvCard.desc')}
       </p>
 
-      {/* Empty state */}
+      {/* Empty state — clickable to upload */}
       {empty && (
-        <div
-          className="flex flex-col items-center justify-center gap-2 py-8 rounded-xl"
+        <button
+          onClick={() => setShowUpload(true)}
+          className="w-full flex flex-col items-center justify-center gap-2 py-8 rounded-xl transition-colors hover:brightness-110"
           style={{ background: 'var(--color-bg)', border: '1px dashed var(--color-border)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--color-accent)')}
+          onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--color-border)')}
         >
-          <FolderOpen size={22} style={{ color: 'var(--color-text-muted)', opacity: 0.5 }} />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--color-accent-light)', border: '1px solid var(--color-accent-border)' }}>
+            <Plus size={18} style={{ color: 'var(--color-accent-text)' }} />
+          </div>
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t('cvCard.empty')}</p>
-        </div>
+          <p className="text-sm font-semibold" style={{ color: 'var(--color-accent-text)' }}>{t('cvCard.addCta')}</p>
+        </button>
       )}
 
       {/* Single item — locked, no dropdown */}
@@ -126,6 +155,14 @@ export function CVPrincipalCard() {
             </div>
           )}
         </div>
+      )}
+
+      {showUpload && (
+        <UploadModal
+          onClose={() => { if (!uploading) setShowUpload(false) }}
+          onAdd={addCV}
+          loading={uploading}
+        />
       )}
     </Card>
   )

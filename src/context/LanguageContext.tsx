@@ -386,6 +386,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cvCard.title':      'CV Principal',
     'cvCard.desc':       'Este CV se usará por defecto al agregar una postulación.',
     'cvCard.empty':      'No tienes CVs guardados',
+    'cvCard.addCta':     'Subir tu primer CV',
     'cvCard.onlyOne':    'Solo tienes un CV — se estableció como principal automáticamente.',
     'cvCard.select':     'Selecciona un CV principal…',
 
@@ -393,6 +394,7 @@ const translations: Record<Language, Record<string, string>> = {
     'clCard.title':      'Carta de Presentación Principal',
     'clCard.desc':       'Esta carta se usará por defecto al agregar una postulación.',
     'clCard.empty':      'No tienes cartas guardadas',
+    'clCard.addCta':     'Crear tu primera carta',
     'clCard.onlyOne':    'Solo tienes una carta — se estableció como principal automáticamente.',
     'clCard.select':     'Selecciona una carta principal…',
     'clCard.preview':    'Vista previa',
@@ -799,6 +801,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cvCard.title':      'Primary CV',
     'cvCard.desc':       'This CV will be used by default when adding an application.',
     'cvCard.empty':      'You have no saved CVs',
+    'cvCard.addCta':     'Upload your first CV',
     'cvCard.onlyOne':    'You only have one CV — it was set as primary automatically.',
     'cvCard.select':     'Select a primary CV…',
 
@@ -806,6 +809,7 @@ const translations: Record<Language, Record<string, string>> = {
     'clCard.title':      'Primary Cover Letter',
     'clCard.desc':       'This letter will be used by default when adding an application.',
     'clCard.empty':      'You have no saved cover letters',
+    'clCard.addCta':     'Create your first letter',
     'clCard.onlyOne':    'You only have one letter — it was set as primary automatically.',
     'clCard.select':     'Select a primary cover letter…',
     'clCard.preview':    'Preview',
