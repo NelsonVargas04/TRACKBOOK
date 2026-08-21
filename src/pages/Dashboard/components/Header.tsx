@@ -26,11 +26,12 @@ export default function Header() {
 
   return (
     <header
-      className="flex items-center justify-end gap-4 px-8 shrink-0"
+      className="flex items-center justify-end gap-4 px-8 shrink-0 sticky top-0 z-30"
       style={{
         height: 64,
         borderBottom: '1px solid var(--color-border)',
         background: 'var(--color-surface)',
+        boxShadow: 'var(--shadow-xs)',
       }}
     >
       {/* Language toggle */}

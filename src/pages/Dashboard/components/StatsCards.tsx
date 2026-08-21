@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Briefcase, MessageSquare, Star, FileText, ScrollText, TrendingUp } from 'lucide-react'
 import { useCountUp } from '@/hooks/useCountUp'
 import { useCV } from '@/context/CVContext'
@@ -20,17 +20,36 @@ function StatCard({
   border: string
 }) {
   const animated = useCountUp(rawValue)
+  const [hover, setHover] = useState(false)
 
   return (
     <div
-      className="rounded-2xl px-5 py-4 flex flex-col gap-3"
-      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+      className="px-5 py-4 flex flex-col gap-3"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: 'var(--color-surface)',
+        border: `1px solid ${hover ? border : 'var(--color-border)'}`,
+        borderRadius: 'var(--radius-lg)',
+        boxShadow: hover ? 'var(--shadow-md)' : 'none',
+        transform: hover ? 'translateY(-3px)' : 'translateY(0)',
+        transition: 'transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out), border-color var(--dur) var(--ease)',
+      }}
     >
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold" style={{ color: 'var(--color-text-muted)' }}>
           {label}
         </span>
-        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: bg, border: `1px solid ${border}` }}>
+        <div
+          className="w-8 h-8 rounded-xl flex items-center justify-center"
+          style={{
+            background: bg,
+            border: `1px solid ${border}`,
+            transform: hover ? 'scale(1.12) rotate(-4deg)' : 'scale(1)',
+            boxShadow: hover ? `0 4px 12px ${border}` : 'none',
+            transition: 'transform var(--dur) var(--ease-spring), box-shadow var(--dur) var(--ease)',
+          }}
+        >
           <Icon size={14} style={{ color }} />
         </div>
       </div>

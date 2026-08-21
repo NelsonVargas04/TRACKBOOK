@@ -69,7 +69,7 @@ export function UndoToast({ message, onUndo, onDismiss, duration = 5000 }: Props
         style={{
           background: 'var(--color-surface)',
           border: '1px solid var(--color-border)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          boxShadow: 'var(--shadow-lg)',
           minWidth: 360,
         }}
       >

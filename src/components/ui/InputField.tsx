@@ -21,14 +21,28 @@ export function InputField({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg px-4 py-3 text-base outline-none transition-colors"
+        className="px-4 py-3 text-base outline-none"
         style={{
           background: 'var(--color-bg)',
           border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-md)',
           color: 'var(--color-text-primary)',
+          transition: 'border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease)',
         }}
-        onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--color-accent)')}
-        onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--color-border)')}
+        onFocus={(e) => {
+          e.currentTarget.style.borderColor = 'var(--color-accent)'
+          e.currentTarget.style.boxShadow = '0 0 0 3px var(--color-accent-light)'
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = 'var(--color-border)'
+          e.currentTarget.style.boxShadow = 'none'
+        }}
+        onMouseEnter={(e) => {
+          if (document.activeElement !== e.currentTarget) e.currentTarget.style.borderColor = 'var(--color-accent-border)'
+        }}
+        onMouseLeave={(e) => {
+          if (document.activeElement !== e.currentTarget) e.currentTarget.style.borderColor = 'var(--color-border)'
+        }}
       />
     </div>
   )

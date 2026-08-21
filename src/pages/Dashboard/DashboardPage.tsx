@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Download } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import StatsCards from './components/StatsCards'
@@ -49,22 +50,17 @@ export default function DashboardPage() {
                 {t('dashboard.subtitle')}
               </p>
             </div>
-            <button
+            <Button
+              variant="secondary"
               onClick={handleExport}
-              disabled={exporting}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{
-                background: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-                color: 'var(--color-text-secondary)',
-              }}
+              loading={exporting}
+              icon={Download}
             >
-              <Download size={14} />
-              {exporting ? '…' : t('dashboard.export')}
-            </button>
+              {t('dashboard.export')}
+            </Button>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 reveal">
             <StatsCards />
             <div className="grid gap-4" style={{ gridTemplateColumns: '2fr 1fr', alignItems: 'stretch' }}>
               <ConversionFunnel />

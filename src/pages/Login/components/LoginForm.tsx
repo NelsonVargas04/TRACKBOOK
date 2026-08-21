@@ -43,12 +43,12 @@ export default function LoginForm() {
       <div className="w-full max-w-[400px] flex flex-col">
         <div
           className="w-full rounded-2xl flex flex-col items-center text-center px-8 py-10 mb-5"
-          style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.18)' }}
+          style={{ background: 'var(--color-accent-light)', border: '1px solid var(--color-accent-border)' }}
         >
           <div className="relative flex items-center justify-center mb-6">
-            <div className="absolute rounded-full" style={{ width: 72, height: 72, background: 'rgba(139,92,246,0.08)', animation: 'ping-slow 2s ease-out infinite' }} />
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(139,92,246,0.14)', border: '1px solid rgba(139,92,246,0.3)' }}>
-              <Mail size={24} style={{ color: '#a78bfa' }} />
+            <div className="absolute rounded-full" style={{ width: 72, height: 72, background: 'var(--color-accent-light)', animation: 'ping-slow 2s ease-out infinite' }} />
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'var(--color-accent-light)', border: '1px solid var(--color-accent-border)' }}>
+              <Mail size={24} style={{ color: 'var(--color-accent-text)' }} />
             </div>
           </div>
 
@@ -59,7 +59,7 @@ export default function LoginForm() {
           <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.7', marginBottom: 4 }}>
             {t('login.sentTo')}
           </p>
-          <p className="font-semibold mb-5" style={{ fontSize: '14px', color: '#a78bfa', wordBreak: 'break-all' }}>
+          <p className="font-semibold mb-5" style={{ fontSize: '14px', color: 'var(--color-accent-text)', wordBreak: 'break-all' }}>
             {email}
           </p>
 
@@ -128,8 +128,8 @@ export default function LoginForm() {
               required
               className="w-full rounded-xl pl-9 pr-4 py-3 text-sm outline-none transition-all"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: '#f9fafb', colorScheme: 'dark' }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(124,111,205,0.5)')}
-              onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--color-accent-light)' }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.boxShadow = 'none' }}
             />
           </div>
         </div>
@@ -145,9 +145,9 @@ export default function LoginForm() {
           type="submit"
           disabled={step === 'sending'}
           className="w-full rounded-xl py-3.5 font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-          style={{ background: 'linear-gradient(135deg, #7C6FCD 0%, #9f6fcd 100%)', color: '#fff', fontSize: '13px', letterSpacing: '0.06em', boxShadow: '0 4px 20px rgba(124,111,205,0.35)', opacity: step === 'sending' ? 0.7 : 1 }}
-          onMouseEnter={(e) => { if (step !== 'sending') e.currentTarget.style.boxShadow = '0 6px 28px rgba(124,111,205,0.5)' }}
-          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(124,111,205,0.35)')}
+          style={{ background: 'linear-gradient(135deg, var(--color-accent) 0%, color-mix(in srgb, var(--color-accent) 72%, #fff) 100%)', color: '#fff', fontSize: '13px', letterSpacing: '0.06em', boxShadow: '0 4px 20px var(--color-accent-border)', opacity: step === 'sending' ? 0.7 : 1 }}
+          onMouseEnter={(e) => { if (step !== 'sending') { e.currentTarget.style.boxShadow = '0 6px 28px var(--color-accent-border)'; e.currentTarget.style.filter = 'brightness(1.06)' } }}
+          onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-border)'; e.currentTarget.style.filter = 'none' }}
         >
           {step === 'sending'
             ? <><Loader2 size={15} className="animate-spin" /> {t('login.sending')}</>

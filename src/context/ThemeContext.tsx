@@ -18,6 +18,9 @@ export interface Theme {
   textSecondary: string
   textMuted: string
   border: string
+  /* RGB triplet used to build the elevation scale in globals.css.
+     Dark themes use pure black; the light theme uses a soft cool tint. */
+  shadowRgb: string
 }
 
 export const themes: Theme[] = [
@@ -39,6 +42,7 @@ export const themes: Theme[] = [
     textSecondary: '#9ca3af',
     textMuted: '#6b7280',
     border: 'rgba(255,255,255,0.06)',
+    shadowRgb: '0, 0, 0',
   },
   {
     id: 'midnight',
@@ -58,6 +62,7 @@ export const themes: Theme[] = [
     textSecondary: '#9ca3af',
     textMuted: '#6b7280',
     border: 'rgba(255,255,255,0.06)',
+    shadowRgb: '0, 0, 0',
   },
   {
     id: 'emerald',
@@ -77,6 +82,7 @@ export const themes: Theme[] = [
     textSecondary: '#9ca3af',
     textMuted: '#6b7280',
     border: 'rgba(255,255,255,0.06)',
+    shadowRgb: '0, 0, 0',
   },
   {
     id: 'rose',
@@ -96,6 +102,7 @@ export const themes: Theme[] = [
     textSecondary: '#9ca3af',
     textMuted: '#6b7280',
     border: 'rgba(255,255,255,0.06)',
+    shadowRgb: '0, 0, 0',
   },
   {
     id: 'light',
@@ -115,6 +122,7 @@ export const themes: Theme[] = [
     textSecondary: '#374151',
     textMuted: '#6b7280',
     border: 'rgba(0,0,0,0.1)',
+    shadowRgb: '15, 23, 42',
   },
 ]
 
@@ -140,14 +148,14 @@ function applyFavicon(accent: string) {
   const dark = hexDarken(accent)
   const svg = [
     `<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">`,
-    `<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">`,
-    `<stop offset="0%" stop-color="${accent}" stop-opacity="0.9"/>`,
+    `<defs><linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1">`,
+    `<stop offset="0%" stop-color="${accent}"/>`,
     `<stop offset="100%" stop-color="${dark}"/>`,
     `</linearGradient></defs>`,
-    `<rect x="6" y="6" width="88" height="88" rx="24" fill="url(#g)"/>`,
-    `<rect x="24" y="30" width="52" height="11" rx="5.5" fill="#fff"/>`,
-    `<rect x="31" y="46" width="38" height="11" rx="5.5" fill="#fff" fill-opacity="0.82"/>`,
-    `<rect x="39" y="62" width="22" height="11" rx="5.5" fill="#fff" fill-opacity="0.6"/>`,
+    `<rect x="6" y="6" width="88" height="88" rx="26" fill="url(#g)"/>`,
+    `<rect x="6.75" y="6.75" width="86.5" height="86.5" rx="25.25" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="1.5"/>`,
+    `<rect x="27" y="31" width="46" height="12" rx="6" fill="#fff"/>`,
+    `<rect x="44" y="31" width="12" height="41" rx="6" fill="#fff"/>`,
     `</svg>`,
   ].join('')
 
@@ -180,6 +188,7 @@ function applyTheme(t: Theme) {
   root.style.setProperty('--color-text-secondary',t.textSecondary)
   root.style.setProperty('--color-text-muted',    t.textMuted)
   root.style.setProperty('--color-border',        t.border)
+  root.style.setProperty('--shadow-rgb',          t.shadowRgb)
   applyFavicon(t.accent)
 }
 

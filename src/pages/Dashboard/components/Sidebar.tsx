@@ -39,10 +39,10 @@ export default function Sidebar() {
     >
       {/* ── Logo ── */}
       <div
-        className="flex items-center gap-3 px-5 shrink-0"
+        className="flex items-center px-6 shrink-0"
         style={{ height: 64, borderBottom: '1px solid var(--color-border)' }}
       >
-        <BrandLogo iconSize={32} fontSize={18} />
+        <BrandLogo fontSize={28} />
       </div>
 
       {/* ── Nav label ── */}
@@ -97,7 +97,9 @@ export default function Sidebar() {
                 style={{
                   width: 30,
                   height: 30,
-                  background: isActive ? 'var(--color-accent)' : 'transparent',
+                  background: isActive
+                    ? 'linear-gradient(135deg, var(--color-accent) 0%, color-mix(in srgb, var(--color-accent) 78%, #000) 100%)'
+                    : 'transparent',
                   transition: 'background 0.18s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease',
                   transform: isActive ? 'scale(1.05)' : 'scale(1)',
                   boxShadow: isActive ? '0 4px 12px var(--color-accent-border)' : 'none',

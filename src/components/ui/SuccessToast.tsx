@@ -32,7 +32,8 @@ export function SuccessToast({ message, onDismiss, duration = 3000 }: Props) {
         style={{
           background: 'var(--color-surface)',
           border: '1px solid rgba(34,197,94,0.3)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: 'var(--shadow-lg)',
           minWidth: 300,
         }}
       >

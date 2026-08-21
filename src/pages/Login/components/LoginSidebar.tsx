@@ -50,7 +50,7 @@ export default function LoginSidebar() {
         width: '320px',
         height: '320px',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(124,111,205,0.15) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, var(--color-accent-light) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
       <div style={{
@@ -60,13 +60,14 @@ export default function LoginSidebar() {
         width: '240px',
         height: '240px',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(124,111,205,0.08) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, var(--color-accent-light) 0%, transparent 70%)',
         pointerEvents: 'none',
+        opacity: 0.6,
       }} />
 
       {/* logo arriba */}
       <div className="absolute top-8 left-12 z-10">
-        <BrandLogo iconSize={36} fontSize={22} />
+        <BrandLogo fontSize={30} />
       </div>
 
       {/* slide centrado */}

@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
-import { Spinner } from '@/components/ui/Spinner'
+import { BrandLoader } from '@/components/BrandLoader'
+import { useLang } from '@/context/LanguageContext'
 
 export default function CallbackPage() {
   const navigate = useNavigate()
+  const { t } = useLang()
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -36,9 +38,5 @@ export default function CallbackPage() {
     })
   }, [navigate])
 
-  return (
-    <div className="flex h-screen w-screen items-center justify-center" style={{ background: '#16171f' }}>
-      <Spinner size={32} />
-    </div>
-  )
+  return <BrandLoader label={t('login.connecting')} />
 }
