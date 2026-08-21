@@ -12,7 +12,8 @@
       "Read(//mnt/c/Proyectos/Personales/portfolio/src/hooks/**)",
       "Read(//mnt/c/Proyectos/Personales/portfolio/src/**)",
       "Read(//mnt/c/Proyectos/Personales/portfolio/**)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(echo \"=== tsc exit: $? ===\")"
     ]
   }
 }
